@@ -1,15 +1,16 @@
 import { reactive, html } from 'https://cdn.skypack.dev/@arrow-js/core';
-import listForm from './listForm.js';
+import mediaPlayer from './components/media-player.js';
 import listData from './listData.js';
 import { ApiSubsonic } from './apis/api-subsonic.js';
 
 const state = reactive({
-	mediaqueue: {}
+	mediaqueue: {},
+	mediasrc: "test"
 });
 
 const api = new ApiSubsonic();
 state.mediaqueue = await api.GetPlaylist("800000013");
-console.log("playlist", state.mediaqueue.songs);
+console.log("playlist", state.mediaqueue);
   
 function addItem(e) {
 	e.preventDefault();
@@ -20,10 +21,21 @@ function addItem(e) {
 	});
 	input.value = '';
 }
+
+function PlaySong(song) {
+	console.log("playingMedia", song.src[0])
+	if(song && song.src[0])
+		state.mediasrc = song.src[0];
+}
   
 html`
+	${() => mediaPlayer(state.mediasrc)}
 	<div style="border: solid 1px #ccc;">
-		${listData(state.mediaqueue.songs)}
+		${listData({
+			songs: state.mediaqueue.songs,
+			playMedia: PlaySong
+		})}
 	</div>
-	${listForm(addItem)}
 `(document.getElementById('arrow'));
+
+console.log("mediasrc", state.mediasrc)

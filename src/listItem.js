@@ -1,19 +1,19 @@
 import { html } from 'https://cdn.skypack.dev/@arrow-js/core';
 
-export default item => {
-    console.log(item.coverArt[0].src)
-   return html`
+export default (song, playMedia) => {
+    //console.log(song)
+    return html`
         <li>
             <button 
-                @click="${() => console.log('test')}"
-                data-src="${item.src}"
-                data-artistid="${item.artistId}"
-                data-albumid="${item.albumId}"
-                data-image="${item.coverArt[0]}"
+                @click="${() => playMedia(song)}"
+                data-src="${song.src}"
+                data-artistid="${song.artistId}"
+                data-albumid="${song.albumId}"
+                data-image="${song.coverArt[0]}"
             >
-                <img src="${item.coverArt[0].src}" width="25"/>
-                ${item.title}
+                <img src="${song.coverArt[0].src}" width="25"/>
+                ${song.title}
             </button>
         </li>
-    `.key(item.id)
+    `.key(song.id)
 }

@@ -1,14 +1,15 @@
 import { reactive, html } from 'https://cdn.skypack.dev/@arrow-js/core';
 import listForm from './listForm.js';
 import listData from './listData.js';
+import { ApiSubsonic } from './apis/api-subsonic.js';
 
-const data = reactive({
-	items: [
-		{ id: 17, task: 'Check email' },
-		{ id: 21, task: 'Get groceries' },
-		{ id: 44, task: 'Make dinner' },
-	]
+const state = reactive({
+	mediaqueue: {}
 });
+
+const api = new ApiSubsonic();
+state.mediaqueue = await api.GetPlaylist("800000013");
+console.log("playlist", state.mediaqueue.songs);
   
 function addItem(e) {
 	e.preventDefault();
@@ -21,6 +22,8 @@ function addItem(e) {
 }
   
 html`
-	${listData(data.items)}
+	<div style="border: solid 1px #ccc;">
+		${listData(state.mediaqueue.songs)}
+	</div>
 	${listForm(addItem)}
 `(document.getElementById('arrow'));

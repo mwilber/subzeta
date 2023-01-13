@@ -24,6 +24,7 @@ export class ApiSubsonic{
 	FormatSongObject(data){
 		//TODO: validate the data object
 		return {
+			id: data.id,
 			album: data.album,
 			albumId: data.albumId,
 			artist: data.artist,

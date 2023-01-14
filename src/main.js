@@ -4,6 +4,7 @@ import { ApiSubsonic } from './apis/api-subsonic.js';
 import { ApiHowler } from './apis/api-howler.js';
 
 import { ControllerQueue } from './controllers/controller-queue.js';
+import { ControllerCache } from './controllers/controller-cache.js';
 
 import mediaPlayer from './components/media-player.js';
 import mediaQueue from './components/media-queue.js';
@@ -29,12 +30,23 @@ const state = reactive({
 const apiSubsonic = new ApiSubsonic();
 const apiHowler = new ApiHowler(state);
 
+const cCache = new ControllerCache('media_v0.11', state);
 const cQueue = new ControllerQueue(state, apiHowler);
 
-state.mediaqueue = await apiSubsonic.GetPlaylist("800000013");
+let mediaListing = await apiSubsonic.GetPlaylist("800000013");
+const getCacheStatus = async item => {
+	item.cached = await cCache.IsCached(item.src[0]);
+	return item;
+}
+const getCacheData = async () => {
+	return Promise.all(mediaListing.songs.map(item => getCacheStatus(item)))
+}
+getCacheData().then(data => {
+	state.mediaqueue = {...mediaListing, songs: data};
+});
+
 state.mediaselection = 0;
 console.log("playlist", state.mediaqueue);
-
 
 
 html`
@@ -42,10 +54,10 @@ html`
 	${() => mediaScrubber(state.mediadisplay, apiHowler)}
 	${mediaPlayer(apiHowler, cQueue)}
 	<div style="border: solid 1px #ccc;">
-		${() => mediaQueue({
-			songs: state.mediaqueue.songs,
-			playSong: cQueue.PlayId.bind(cQueue)
-		})}
+		${() => mediaQueue(
+			state.mediaqueue,
+			cQueue.PlayId.bind(cQueue)
+		)}
 	</div>
 `(document.getElementById('arrow'));
 

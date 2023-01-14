@@ -1,3 +1,5 @@
+import { ControllerCache } from "./controller-cache.js";
+
 export class ControllerQueue {
 
     constructor(state, audioApi) {

@@ -1,13 +1,13 @@
 import { html } from 'https://cdn.skypack.dev/@arrow-js/core';
 
-export default ({songs, playMedia}) => 
+export default ({songs, playSong}) => 
 	html`
     <ul>
 		${() => songs.map(
             (song) => html`
             <li>
                 <button 
-                    @click="${() => playMedia(song.id)}"
+                    @click="${() => playSong(song.id)}"
                     data-src="${song.src}"
                     data-artistid="${song.artistId}"
                     data-albumid="${song.albumId}"

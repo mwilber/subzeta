@@ -10,6 +10,16 @@ import mediaQueue from './components/media-queue.js';
 import mediaDisplay from './components/media-display.js';
 import mediaScrubber from './components/media_scrubber.js';
 
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../service-worker.js').then(registration => {
+            console.log('SW registered: ', registration);
+        }).catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+        });
+    });
+}
+
 const state = reactive({
 	mediaqueue: {},
 	mediadisplay: {},

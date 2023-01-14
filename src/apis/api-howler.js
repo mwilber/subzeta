@@ -143,4 +143,8 @@ export class ApiHowler {
 		this.howl.seek( duration * (percent / 100) );
 	}
 
+	Jump(duration, reverse){
+		
+	}
+
 }

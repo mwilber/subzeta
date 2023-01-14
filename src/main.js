@@ -7,9 +7,11 @@ import { ControllerQueue } from './controllers/controller-queue.js';
 
 import mediaPlayer from './components/media-player.js';
 import mediaQueue from './components/media-queue.js';
+import mediaDisplay from './components/media-display.js';
 
 const state = reactive({
 	mediaqueue: {},
+	mediadisplay: {},
 	mediaselection: null
 });
 
@@ -22,14 +24,12 @@ state.mediaqueue = await apiSubsonic.GetPlaylist("800000013");
 console.log("playlist", state.mediaqueue);
 
 watch(() => {
-	console.log("watching...");
-	if(state.mediaselection !== null) {
-		console.log("playing...")
+	if(state.mediaselection !== null)
 		apiHowler.PlayMediaSelection();
-	}
 });
   
 html`
+	${() => mediaDisplay(state.mediadisplay)}
 	${mediaPlayer(apiHowler, cQueue)}
 	<div style="border: solid 1px #ccc;">
 		${() => mediaQueue({

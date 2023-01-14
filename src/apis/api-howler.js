@@ -29,7 +29,8 @@ export class ApiHowler {
 				// Enable wake lock
 				//this.noSleep.enable();
 				// Display the duration.
-				//this.display.duration.innerHTML = this.formatTime(Math.round(this.howl.duration()));
+				this.state.mediadisplay.title = this.meta.title;
+				this.state.mediadisplay.duration = this.formatTime(Math.round(this.howl.duration()));
 				// Update the media session api
 				if ('mediaSession' in navigator) {
 					navigator.mediaSession.playbackState = "playing";

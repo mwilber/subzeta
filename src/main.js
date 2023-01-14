@@ -8,6 +8,7 @@ import { ControllerQueue } from './controllers/controller-queue.js';
 import mediaPlayer from './components/media-player.js';
 import mediaQueue from './components/media-queue.js';
 import mediaDisplay from './components/media-display.js';
+import mediaScrubber from './components/media_scrubber.js';
 
 const state = reactive({
 	mediaqueue: {},
@@ -28,6 +29,7 @@ console.log("playlist", state.mediaqueue);
 
 html`
 	${() => mediaDisplay(state.mediadisplay)}
+	${() => mediaScrubber(state.mediadisplay, apiHowler)}
 	${mediaPlayer(apiHowler, cQueue)}
 	<div style="border: solid 1px #ccc;">
 		${() => mediaQueue({

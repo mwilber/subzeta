@@ -100,7 +100,7 @@ export class ApiHowler {
 
 		// Update the scrubber position
 		// if (document.activeElement != this.controls.scrubber){
-		// 	this.controls.scrubber.value = Math.floor((seek/duration)*100);
+		this.state.mediadisplay.progress = Math.floor((seek/duration)*100);
 		// }
 
 		// Update the media session api
@@ -130,6 +130,17 @@ export class ApiHowler {
     Pause(){
 		if(this.howl && this.howl.playing())
 			this.howl.pause();
+	}
+
+	/**
+	 * 
+	 * @param {number} percent value between 1 and 100 
+	 */
+	Scrub(percent){
+		if(isNaN(percent) || !this.howl || !this.howl.duration) return;
+		console.log('scrubber changed', percent);
+		let duration = this.howl.duration();
+		this.howl.seek( duration * (percent / 100) );
 	}
 
 }

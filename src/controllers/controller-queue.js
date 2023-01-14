@@ -1,7 +1,11 @@
 export class ControllerQueue {
 
-    constructor(state) {
+    constructor(state, audioApi) {
         this.state = state;
+        this.audioApi = audioApi;
+
+        // TODO: tie this into a user setting
+        this.audioApi.onEnd = this.PlayNext.bind(this);
     }
 
     _setMediaSelection(index){
@@ -9,6 +13,7 @@ export class ControllerQueue {
         if(index >= 0 && index <= (this.state.mediaqueue.songs.length-1)) {
             console.log("setting media selection");
             this.state.mediaselection = index;
+            this.audioApi.PlayMediaSelection();
         }
     }
 

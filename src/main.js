@@ -18,16 +18,14 @@ const state = reactive({
 const apiSubsonic = new ApiSubsonic();
 const apiHowler = new ApiHowler(state);
 
-const cQueue = new ControllerQueue(state);
+const cQueue = new ControllerQueue(state, apiHowler);
 
 state.mediaqueue = await apiSubsonic.GetPlaylist("800000013");
+state.mediaselection = 0;
 console.log("playlist", state.mediaqueue);
 
-watch(() => {
-	if(state.mediaselection !== null)
-		apiHowler.PlayMediaSelection();
-});
-  
+
+
 html`
 	${() => mediaDisplay(state.mediadisplay)}
 	${mediaPlayer(apiHowler, cQueue)}

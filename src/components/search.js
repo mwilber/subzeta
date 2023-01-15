@@ -1,10 +1,31 @@
 import { html } from 'https://cdn.skypack.dev/@arrow-js/core';
 
-export default (results, controller, queue, loadAlbum) => html`
+export default (results, controller, queue, loadAlbum, loadArtist) => html`
     <form @submit="${controller.Search.bind(controller)}">
         <input id="search-query" type="text" name="query" placeholder="Search" value="" />
         <input type="submit" class="search" value="Go" />
     </form>
+    ${() => {
+        if(results.artists && results.artists.length)
+            return html`
+            <h2>Artists</h2>
+                <ul>
+                    ${() => results.artists.map((artist) => {
+                        return html`
+                            <li>
+                                <button 
+                                    @click="${() => loadArtist(artist.id)}"
+                                    data-id="${artist.id}"
+                                    data-name="${artist.name}"
+                                >
+                                    ${artist.name}
+                                </button>
+                            </li>
+                        `.key(artist.id);
+                    })}
+                </ul>
+            `
+    }}
     ${() => {
         if(results.albums && results.albums.length)
             return html`

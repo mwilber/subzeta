@@ -79,6 +79,30 @@ export class ApiSubsonic{
 			);
 	}
 
+	GetArtistAlbums(id){
+		if(!id) return;
+
+		return fetch(this.GetServerQuery('getArtist',{id: id}))
+			.then(response => response.json())
+			.then(
+				(data)=>{
+                console.log("🚀 ~ file: api-subsonic.js ~ line 63 ~ ApiSubsonic ~ GetArtist ~ data", data)
+					if( !data['subsonic-response'] || 
+						data['subsonic-response'].status !== 'ok' || 
+						!data['subsonic-response'].artist || 
+						!data['subsonic-response'].artist.album
+						) return;
+					let playlistObj = {
+						albums: []
+					}
+					data['subsonic-response'].artist.album.forEach((album)=>{
+						playlistObj.albums.push(album)
+					});
+					return playlistObj;
+				}
+			);
+	}
+
 	GetPlaylist(id){
 		// TODO: remove this defualt value
 		id = id || '800000013';
@@ -139,8 +163,11 @@ export class ApiSubsonic{
 						searchResultObj.songs.push(this.FormatSongObject(song))
 					});
 					// Add Albums
-					searchResultObj.albums = data['subsonic-response'].searchResult2.album.slice();
+					if(data['subsonic-response'].searchResult2.album)
+						searchResultObj.albums = data['subsonic-response'].searchResult2.album.slice();
 					// TODO: Add artists
+					if(data['subsonic-response'].searchResult2.artist)
+						searchResultObj.artists = data['subsonic-response'].searchResult2.artist.slice();
 					return searchResultObj;
 				}
 			);

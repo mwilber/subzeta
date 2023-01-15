@@ -64,6 +64,13 @@ const LoadAlbumById = async (id, autoplay) => {
 	cQueue.LoadData(playlist, autoplay);
 };
 
+const LoadAlbumsByArtistId = async (id) => {
+	if(!id) return;
+	
+	let albums = await apiSubsonic.GetArtistAlbums(id);
+	state.searchresults = albums;
+};
+
 
 html`
 	${() => mediaDisplay(state.mediadisplay)}
@@ -75,7 +82,8 @@ html`
 			state.searchresults,
 			cSearch,
 			cQueue,
-			LoadAlbumById
+			LoadAlbumById,
+			LoadAlbumsByArtistId
 		)}
 	</div>
 	<div style="border: solid 1px #ccc;">

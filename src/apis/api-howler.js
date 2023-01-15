@@ -185,7 +185,13 @@ export class ApiHowler {
 	}
 
 	Jump(duration, reverse){
-
+		if(!this.howl) return;
+		let seek = this.howl.seek() || 0;
+		seek = Math.max(0, reverse ? (seek - duration) : (seek + duration));
+		
+		this.howl.pause();
+		this.howl.seek(seek);
+		this.howl.play();
 	}
 
 }

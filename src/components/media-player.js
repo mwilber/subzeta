@@ -5,5 +5,7 @@ export default (audioApi, queueController) =>
         <button @click="${() => audioApi.Play()}">Play${Math.random()}</button>
         <button @click="${() => audioApi.Pause()}">Pause</button>
         <button @click="${() => queueController.PlayPrevious()}">Previous</button>
+        <button @click="${() => audioApi.Jump(10, true)}">Reverse</button>
+        <button @click="${() => audioApi.Jump(10, false)}">Forward</button>
         <button @click="${() => queueController.PlayNext()}">Next</button>
 	`;

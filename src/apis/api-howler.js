@@ -40,7 +40,7 @@ export class ApiHowler {
 			html5: true,
 			onplay: ()=>{
 				// Set the media volume to match the UI
-				this.howl.volume( 2 / 100 );
+				this.howl.volume( this.state.volume || 1 );
 				// Enable wake lock
 				//this.noSleep.enable();
 				// Display the duration.
@@ -192,6 +192,18 @@ export class ApiHowler {
 		this.howl.pause();
 		this.howl.seek(seek);
 		this.howl.play();
+	}
+
+	/**
+	 * 
+	 * @param {number} percent value between 1 and 100 
+	 */
+	Volume(percent){
+		if(isNaN(percent) || !this.howl) return;
+		this.state.volume = percent;
+		let volVal = this.state.volume / 100;
+		console.log('setting volume to', volVal);
+		this.howl.volume( volVal );
 	}
 
 }

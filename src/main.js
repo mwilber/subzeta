@@ -10,6 +10,7 @@ import mediaPlayer from './components/media-player.js';
 import mediaQueue from './components/media-queue.js';
 import mediaDisplay from './components/media-display.js';
 import mediaScrubber from './components/media_scrubber.js';
+import mediaVolume from './components/media_volume.js';
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -42,6 +43,7 @@ html`
 	${() => mediaDisplay(state.mediadisplay)}
 	${() => mediaScrubber(state.mediadisplay, apiHowler)}
 	${mediaPlayer(apiHowler, cQueue)}
+	${() => mediaVolume(state.volume, apiHowler)}
 	<div style="border: solid 1px #ccc;">
 		${() => mediaQueue(
 			state.mediaqueue,
@@ -49,3 +51,5 @@ html`
 		)}
 	</div>
 `(document.getElementById('arrow'));
+
+window.state = state;

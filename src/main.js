@@ -12,6 +12,7 @@ import mediaQueue from './components/media-queue.js';
 import mediaDisplay from './components/media-display.js';
 import mediaScrubber from './components/media_scrubber.js';
 import mediaVolume from './components/media_volume.js';
+import playLists from './components/playlists.js'
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -24,6 +25,8 @@ if ('serviceWorker' in navigator) {
 }
 
 const state = reactive({
+	playlists: {},
+	playlistSelection: null,
 	mediaqueue: {},
 	mediadisplay: {},
 	mediaselection: null,
@@ -39,8 +42,16 @@ const cQueue = new ControllerQueue(state, apiHowler, cCache);
 
 apiMediaSession.Init(apiHowler, cQueue);
 
-let playlist = await apiSubsonic.GetPlaylist("800000013");
-cQueue.LoadData(playlist);
+state.playlists = await apiSubsonic.GetPlaylists();
+console.log("playlists", state.playlists);
+
+const LoadPlaylistById = async (id) => {
+	if(!id) return;
+	
+	//id = "800000013";
+	let playlist = await apiSubsonic.GetPlaylist(id);
+	cQueue.LoadData(playlist);
+};
 
 
 html`
@@ -52,6 +63,11 @@ html`
 		${() => mediaQueue(
 			state.mediaqueue,
 			cQueue
+		)}
+	</div>
+	<div style="border: solid 1px #ccc;">
+		${() => playLists(
+			state.playlists
 		)}
 	</div>
 `(document.getElementById('arrow'));

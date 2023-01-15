@@ -1,6 +1,6 @@
 import { html } from 'https://cdn.skypack.dev/@arrow-js/core';
 
-export default (data) => {
+export default (data, loadPl) => {
     if(data && data.length)
 	return html`
         <ul>
@@ -9,7 +9,7 @@ export default (data) => {
                 return html`
                     <li>
                         <button 
-                            @click="${() => queue.PlayId(id)}"
+                            @click="${() => loadPl(id)}"
                             data-id="${id}"
                             data-name="${name}"
                             data-songcount="${songCount}"

@@ -29,12 +29,13 @@ export class ControllerQueue {
         return Promise.all(mediaListing.map(item => this._getCacheStatus(item)))
     }
 
-    LoadData (data){
+    LoadData (data, autoplay){
         if(!data || !data.songs) return;
         this._getCacheData(data.songs).then(cacheData => {
             this.state.mediaqueue = {...data, songs: cacheData};
             this.state.mediaselection = 0;
             console.log("Queue Data Loaded", this.state.mediaqueue);
+            if(autoplay) this.PlayFirst();
         });
     }
 
@@ -51,6 +52,10 @@ export class ControllerQueue {
             console.log("playingMedia", id);
             this._setMediaSelection(songIndex);
         }
+    }
+
+    PlayFirst() {
+        this._setMediaSelection(0);
     }
     
     PlayNext() {

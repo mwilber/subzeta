@@ -1,10 +1,9 @@
 export class ApiHowler {
-    constructor(state) {
+    constructor(state, mediaSession) {
         this.state = state;
+		this.mediaSession = mediaSession;
         this.meta = null;
 		this.onEnd = null;
-
-		this.InitMediaSessionHandlers();
     }
 
 	_formatTime(secs) {
@@ -40,15 +39,13 @@ export class ApiHowler {
 			html5: true,
 			onplay: ()=>{
 				// Set the media volume to match the UI
-				this.howl.volume( this.state.volume || 1 );
+				this.Volume( this.state.volume || 1 );
 				// Enable wake lock
 				//this.noSleep.enable();
 				// Display the duration.
 				this.state.mediadisplay.duration = this._formatTime(Math.round(this.howl.duration()));
 				// Update the media session api
-				if ('mediaSession' in navigator) {
-					navigator.mediaSession.playbackState = "playing";
-				}
+				this.mediaSession.SetState(1);
 				// Start upating the progress of the track.
 				requestAnimationFrame(this.Step.bind(this));
 			},
@@ -56,25 +53,19 @@ export class ApiHowler {
 				// Disable wake lock
 				//this.noSleep.disable();
 				// Update the media session api
-				if ('mediaSession' in navigator) {
-					navigator.mediaSession.playbackState = "paused";
-				}
+				this.mediaSession.SetState(2);
 			},
 			onstop: ()=>{
 				// Disable wake lock
 				//this.noSleep.disable();
 				// Update the media session api
-				if ('mediaSession' in navigator) {
-					navigator.mediaSession.playbackState = "none";
-				}
+				this.mediaSession.SetState(0);
 			},
 			onend: ()=>{
 				// Disable wake lock
 				//this.noSleep.disable();
 				// Update the media session api
-				if ('mediaSession' in navigator) {
-					navigator.mediaSession.playbackState = "none";
-				}
+				this.mediaSession.SetState(0);
 			}
 		});
 
@@ -88,7 +79,7 @@ export class ApiHowler {
 			duration: '--'
 		};
 
-		this.UpdateMediaSessionApi();
+		this.mediaSession.UpdateMeta(this.meta);
 		this.Play();
 	}
 
@@ -96,41 +87,6 @@ export class ApiHowler {
         console.log('Unloading audio file', this.howl);
         if(this.howl && this.howl.unload) this.howl.unload();
     }
-
-	InitMediaSessionHandlers(){
-		const actionsAndHandlers = [
-			['play', () => { this.Play(); }],
-			['pause', () => { this.Pause(); }],
-			// ['previoustrack', () => { this.PreviousMediaFile(); }],
-			// ['nexttrack', () => { this.NextMediaFile(); }],
-			// ['seekbackward', (details) => { 
-			// 	let seek = this.howl.seek() || 0;
-			// 	this.howl.seek( seek - (details.seekOffset || 10) ); 
-			// }],
-			// ['seekforward', (details) => {
-			// 	let seek = this.howl.seek() || 0;
-			// 	this.howl.seek( seek + (details.seekOffset || 10) );
-			// }],
-			// ['seekto', (details) => { this.howl.seek( details.seekTime ); }],
-			['stop', () => { this.Pause(); }]
-		];
-		 
-		for (const [action, handler] of actionsAndHandlers) {
-			try {
-			  navigator.mediaSession.setActionHandler(action, handler);
-			} catch (error) {
-			  console.log(`The media session action, ${action}, is not supported`);
-			}
-		}
-	}
-
-	UpdateMediaSessionApi(){
-		if ('mediaSession' in navigator) {
-			const picked = (({ title, artist, album, artwork }) => ({ title, artist, album, artwork }))(this.meta);
-			console.log("updating media session api", picked)
-			navigator.mediaSession.metadata = new MediaMetadata(picked);
-		}
-	}
 
 	Step(){
 		let self = this;
@@ -145,13 +101,11 @@ export class ApiHowler {
 		this.state.mediadisplay.progress = Math.floor((seek/duration)*100);
 
 		// Update the media session api
-		if ('mediaSession' in navigator) {
-			navigator.mediaSession.setPositionState({
-				duration: duration,
-				playbackRate: this.howl.rate(),
-				position: seek
-			});
-		}
+		this.mediaSession.UpdatePosition({
+			duration: duration,
+			playbackRate: this.howl.rate(),
+			position: seek
+		});
 
 		// If the sound is still playing, continue stepping.
 		if (sound.playing()) {
@@ -191,6 +145,14 @@ export class ApiHowler {
 		
 		this.howl.pause();
 		this.howl.seek(seek);
+		this.howl.play();
+	}
+
+	Seek(time){
+		if(!this.howl) return;
+		
+		this.howl.pause();
+		this.howl.seek(time);
 		this.howl.play();
 	}
 

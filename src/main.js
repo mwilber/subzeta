@@ -2,6 +2,7 @@ import { reactive, watch, html } from 'https://cdn.skypack.dev/@arrow-js/core';
 
 import { ApiSubsonic } from './apis/api-subsonic.js';
 import { ApiHowler } from './apis/api-howler.js';
+import { ApiMediaSession } from './apis/api-mediasession.js';
 
 import { ControllerQueue } from './controllers/controller-queue.js';
 import { ControllerCache } from './controllers/controller-cache.js';
@@ -30,11 +31,13 @@ const state = reactive({
 });
 
 const apiSubsonic = new ApiSubsonic();
-const apiHowler = new ApiHowler(state);
+const apiMediaSession = new ApiMediaSession();
+const apiHowler = new ApiHowler(state, apiMediaSession);
 
 const cCache = new ControllerCache('media_v0.11', state);
 const cQueue = new ControllerQueue(state, apiHowler, cCache);
 
+apiMediaSession.Init(apiHowler, cQueue);
 
 let playlist = await apiSubsonic.GetPlaylist("800000013");
 cQueue.LoadData(playlist);

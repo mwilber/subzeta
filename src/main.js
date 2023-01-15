@@ -31,22 +31,11 @@ const apiSubsonic = new ApiSubsonic();
 const apiHowler = new ApiHowler(state);
 
 const cCache = new ControllerCache('media_v0.11', state);
-const cQueue = new ControllerQueue(state, apiHowler);
+const cQueue = new ControllerQueue(state, apiHowler, cCache);
 
-let mediaListing = await apiSubsonic.GetPlaylist("800000013");
-const getCacheStatus = async item => {
-	item.cached = await cCache.IsCached(item.src[0]);
-	return item;
-}
-const getCacheData = async () => {
-	return Promise.all(mediaListing.songs.map(item => getCacheStatus(item)))
-}
-getCacheData().then(data => {
-	state.mediaqueue = {...mediaListing, songs: data};
-});
 
-state.mediaselection = 0;
-console.log("playlist", state.mediaqueue);
+let playlist = await apiSubsonic.GetPlaylist("800000013");
+cQueue.LoadData(playlist);
 
 
 html`
@@ -56,9 +45,7 @@ html`
 	<div style="border: solid 1px #ccc;">
 		${() => mediaQueue(
 			state.mediaqueue,
-			cQueue.PlayId.bind(cQueue)
+			cQueue
 		)}
 	</div>
 `(document.getElementById('arrow'));
-
-window.state = state;

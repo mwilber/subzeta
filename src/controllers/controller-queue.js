@@ -2,21 +2,45 @@ import { ControllerCache } from "./controller-cache.js";
 
 export class ControllerQueue {
 
-    constructor(state, audioApi) {
+    constructor(state, audioApi, mediaCache) {
         this.state = state;
         this.audioApi = audioApi;
+        this.mediaCache = mediaCache;
 
         // TODO: tie this into a user setting
         this.audioApi.onEnd = this.PlayNext.bind(this);
     }
 
-    _setMediaSelection(index){
+    _setMediaSelection(index) {
         console.log("set at index", index);
         if(index >= 0 && index <= (this.state.mediaqueue.songs.length-1)) {
             console.log("setting media selection");
             this.state.mediaselection = index;
             this.audioApi.PlayMediaSelection();
         }
+    }
+
+    async _getCacheStatus (item) {
+        item.cached = await this.mediaCache.IsCached(item.src[0]);
+        return item;
+    }
+
+    async _getCacheData (mediaListing) {
+        return Promise.all(mediaListing.map(item => this._getCacheStatus(item)))
+    }
+
+    LoadData (data){
+        if(!data || !data.songs) return;
+        this._getCacheData(data.songs).then(cacheData => {
+            this.state.mediaqueue = {...data, songs: cacheData};
+            this.state.mediaselection = 0;
+            console.log("Queue Data Loaded", this.state.mediaqueue);
+        });
+    }
+
+    CacheAll(){
+        //TODO: Set a state value here to trigger a spinner. Update the state and the listing from the cache controller
+        this.mediaCache.CachePlaylist(this.state.mediaqueue);
     }
 
     PlayId(id) {

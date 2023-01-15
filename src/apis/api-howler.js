@@ -3,6 +3,8 @@ export class ApiHowler {
         this.state = state;
         this.meta = null;
 		this.onEnd = null;
+
+		this.InitMediaSessionHandlers();
     }
 
 	_formatTime(secs) {
@@ -86,6 +88,33 @@ export class ApiHowler {
         if(this.howl && this.howl.unload) this.howl.unload();
     }
 
+	InitMediaSessionHandlers(){
+		const actionsAndHandlers = [
+			['play', () => { this.Play(); }],
+			['pause', () => { this.Pause(); }],
+			// ['previoustrack', () => { this.PreviousMediaFile(); }],
+			// ['nexttrack', () => { this.NextMediaFile(); }],
+			// ['seekbackward', (details) => { 
+			// 	let seek = this.howl.seek() || 0;
+			// 	this.howl.seek( seek - (details.seekOffset || 10) ); 
+			// }],
+			// ['seekforward', (details) => {
+			// 	let seek = this.howl.seek() || 0;
+			// 	this.howl.seek( seek + (details.seekOffset || 10) );
+			// }],
+			// ['seekto', (details) => { this.howl.seek( details.seekTime ); }],
+			['stop', () => { this.Pause(); }]
+		];
+		 
+		for (const [action, handler] of actionsAndHandlers) {
+			try {
+			  navigator.mediaSession.setActionHandler(action, handler);
+			} catch (error) {
+			  console.log(`The media session action, ${action}, is not supported`);
+			}
+		}
+	}
+
 	Step(){
 		let self = this;
 
@@ -144,7 +173,7 @@ export class ApiHowler {
 	}
 
 	Jump(duration, reverse){
-		
+
 	}
 
 }

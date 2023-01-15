@@ -25,7 +25,8 @@ if ('serviceWorker' in navigator) {
 const state = reactive({
 	mediaqueue: {},
 	mediadisplay: {},
-	mediaselection: null
+	mediaselection: null,
+	volume: 100
 });
 
 const apiSubsonic = new ApiSubsonic();

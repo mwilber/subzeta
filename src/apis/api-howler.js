@@ -21,7 +21,9 @@ export class ApiHowler {
             this.meta = {
 				title: selectedSong.title,
 				artist: selectedSong.artist,
+				artistId: selectedSong.artistId,
 				album: selectedSong.album,
+				albumId: selectedSong.albumId,
 				artwork: JSON.parse(JSON.stringify(selectedSong.coverArt)),
 				src: selectedSong.src[0]
 			};

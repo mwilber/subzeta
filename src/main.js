@@ -15,6 +15,7 @@ import mediaScrubber from './components/media_scrubber.js';
 import mediaVolume from './components/media_volume.js';
 import playLists from './components/playlists.js';
 import search from './components/search.js';
+import navButton from './components/nav-button.js';
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -33,7 +34,8 @@ const state = reactive({
 	mediaqueue: {},
 	mediadisplay: {},
 	mediaselection: null,
-	volume: 100
+	volume: 100,
+	activepanel: "playlists"
 });
 
 const apiSubsonic = new ApiSubsonic();
@@ -55,13 +57,16 @@ const LoadPlaylistById = async (id) => {
 	//id = "800000013";
 	let playlist = await apiSubsonic.GetPlaylist(id);
 	cQueue.LoadData(playlist);
+	state.activepanel = 'queue';
 };
 
 const LoadAlbumById = async (id, autoplay) => {
+	console.log("loading album by id", id)
 	if(!id) return;
 	
 	let playlist = await apiSubsonic.GetAlbum(id);
 	cQueue.LoadData(playlist, autoplay);
+	state.activepanel = 'queue';
 };
 
 const LoadAlbumsByArtistId = async (id) => {
@@ -69,15 +74,26 @@ const LoadAlbumsByArtistId = async (id) => {
 	
 	let albums = await apiSubsonic.GetArtistAlbums(id);
 	state.searchresults = albums;
+	state.activepanel = 'search';
 };
 
 
+const panelClass = (panelName) => state.activepanel === panelName ? 'panel active' : 'panel'
+
+
 html`
-	${() => mediaDisplay(state.mediadisplay)}
+	${() => navButton(state, 'search')}
+	${() => navButton(state, 'playlists')}
+	${() => navButton(state, 'queue')}
+
+	<div class="media-player">
+	${() => mediaDisplay(state.mediadisplay, LoadAlbumById, LoadAlbumsByArtistId)}
 	${() => mediaScrubber(state.mediadisplay, apiHowler)}
 	${mediaPlayer(apiHowler, cQueue)}
 	${() => mediaVolume(state.volume, apiHowler)}
-	<div style="border: solid 1px #ccc;">
+	</div>
+
+	<div class="${() => panelClass('search')}">
 		${() => search(
 			state.searchresults,
 			cSearch,
@@ -86,13 +102,15 @@ html`
 			LoadAlbumsByArtistId
 		)}
 	</div>
-	<div style="border: solid 1px #ccc;">
+
+	<div class="${() => panelClass('queue')}">
 		${() => mediaQueue(
 			state.mediaqueue,
 			cQueue
 		)}
 	</div>
-	<div style="border: solid 1px #ccc;">
+
+	<div class="${() => panelClass('playlists')}">
 		${() => playLists(
 			state.playlists,
 			LoadPlaylistById,

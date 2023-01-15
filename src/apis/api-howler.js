@@ -19,7 +19,13 @@ export class ApiHowler {
         const selectedSong = this.state.mediaqueue.songs[this.state.mediaselection];
         if(selectedSong.src && selectedSong.src[0]) {
             console.log("found song at index", this.state.mediaselection);
-            this.meta = selectedSong;
+            this.meta = {
+				title: selectedSong.title,
+				artist: selectedSong.artist,
+				album: selectedSong.album,
+				artwork: JSON.parse(JSON.stringify(selectedSong.coverArt)),
+				src: selectedSong.src[0]
+			};
             console.log("🚀 ~ file: media-player.js ~ line 113 ~ extends ~ PlaySongObject ~ this.meta", this.meta)
             this.PlaySongObject();
         }
@@ -27,10 +33,10 @@ export class ApiHowler {
 
     PlaySongObject(){
         
-		if(!this.meta) return;
+		if(!this.meta || !this.meta.src) return;
 		this.UnloadSongObject();
 		this.howl = new Howl({
-			src: this.meta.src[0],
+			src: this.meta.src,
 			html5: true,
 			onplay: ()=>{
 				// Set the media volume to match the UI
@@ -75,11 +81,14 @@ export class ApiHowler {
 		this.howl.on('end', () => {
 			if(this.onEnd) this.onEnd();
 		});
-		this.state.mediadisplay.title = this.meta.title;
-		this.state.mediadisplay.time = this._formatTime(0);
-		this.state.mediadisplay.duration = "--";
 
-		//this.UpdateMediaSessionApi();
+		this.state.mediadisplay = {
+			...this.meta,
+			time: this._formatTime(0),
+			duration: '--'
+		};
+
+		this.UpdateMediaSessionApi();
 		this.Play();
 	}
 
@@ -115,6 +124,14 @@ export class ApiHowler {
 		}
 	}
 
+	UpdateMediaSessionApi(){
+		if ('mediaSession' in navigator) {
+			const picked = (({ title, artist, album, artwork }) => ({ title, artist, album, artwork }))(this.meta);
+			console.log("updating media session api", picked)
+			navigator.mediaSession.metadata = new MediaMetadata(picked);
+		}
+	}
+
 	Step(){
 		let self = this;
 
@@ -125,12 +142,7 @@ export class ApiHowler {
 		let seek = sound.seek() || 0;
 		let duration = this.howl.duration();
 		this.state.mediadisplay.time = self._formatTime(Math.round(seek));
-		//progress.style.width = (((seek / sound.duration()) * 100) || 0) + '%';
-
-		// Update the scrubber position
-		// if (document.activeElement != this.controls.scrubber){
 		this.state.mediadisplay.progress = Math.floor((seek/duration)*100);
-		// }
 
 		// Update the media session api
 		if ('mediaSession' in navigator) {

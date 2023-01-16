@@ -1,7 +1,8 @@
 .panel {
     display: none;
     border: solid #ccc 1px;
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 /* @media (max-width: var(--phone)) {

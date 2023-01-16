@@ -1,0 +1,31 @@
+.media-player {
+    background: #999;
+}
+
+.media-player .media-controls {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.media-player .media-player-buttons {
+    display: flex;
+    width: 100%;
+}
+
+.media-player .media-player-buttons button {
+    flex: 1;
+}
+
+.media-player .scrubber{
+    width: 100%;
+}
+
+.media-player .fs-only
+ {
+    display: none;
+}
+
+.fullscreen .media-player .fs-only {
+    display: block;
+}

@@ -1,14 +1,12 @@
 export class ApiSubsonic{
 
-	constructor(){
-
+	constructor(settings){
+		this.settings = settings;
 	}
 
 	GetServerQuery(method, params){
 
-		let server = localStorage['server'];
-		let user = localStorage['user'];
-		let pass = localStorage['pass'];
+		let {server, user, pass} = this.settings;
 
 		if(server && user && pass){
 			let query = server+'/rest/'+method+'.view?u='+user+'&p='+pass+'&v=1.12.0&f=json&c=greenzeta';

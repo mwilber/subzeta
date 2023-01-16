@@ -13,6 +13,7 @@ import mediaQueue from './components/media-queue.js';
 import mediaDisplay from './components/media-display.js';
 import mediaScrubber from './components/media_scrubber.js';
 import mediaVolume from './components/media_volume.js';
+import settings from './components/settings.js';
 import playLists from './components/playlists.js';
 import search from './components/search.js';
 import navButton from './components/nav-button.js';
@@ -27,7 +28,7 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-const state = reactive({
+let defaultState = {
 	searchresults: [],
 	playlists: {},
 	playlistSelection: null,
@@ -35,10 +36,29 @@ const state = reactive({
 	mediadisplay: {},
 	mediaselection: null,
 	volume: 100,
-	activepanel: "playlists"
+	activepanel: "playlists",
+	fullscreen: false,
+	settings: {
+		server: "",
+		user: "",
+		pass: ""
+	}
+};
+// Retrieve the state from localStorage, if available.
+if(localStorage) {
+	let savedState = localStorage.getItem('subzeta-state');
+	if(savedState && savedState !== null)
+		defaultState = JSON.parse(savedState);
+}
+const state = reactive(defaultState);
+
+// Save the state to localStorage
+watch(() => {
+	if(!localStorage) return;
+	localStorage.setItem('subzeta-state', JSON.stringify(state));
 });
 
-const apiSubsonic = new ApiSubsonic();
+const apiSubsonic = new ApiSubsonic(state.settings);
 const apiMediaSession = new ApiMediaSession();
 const apiHowler = new ApiHowler(state, apiMediaSession);
 
@@ -48,8 +68,12 @@ const cSearch = new ControllerSearch(state, apiSubsonic);
 
 apiMediaSession.Init(apiHowler, cQueue);
 
-state.playlists = await apiSubsonic.GetPlaylists();
-console.log("playlists", state.playlists);
+if(state.settings.server && state.settings.user && state.settings.pass) {
+	state.playlists = await apiSubsonic.GetPlaylists();
+	console.log("playlists", state.playlists);
+} else {
+	state.activepanel = "settings";
+}
 
 const LoadPlaylistById = async (id) => {
 	if(!id) return;
@@ -84,41 +108,55 @@ const panelClass = (panelName) => {
 
 
 html`
-	<navigation>
-		${() => navButton(state, 'search')}
-		${() => navButton(state, 'playlists')}
-		${() => navButton(state, 'queue')}
-	</navigation>
+	<div class="${() => state.fullscreen ? "wrapper fullscreen" : "wrapper"}">
+		<navigation>
+			${() => navButton(state, 'search')}
+			${() => navButton(state, 'playlists')}
+			${() => navButton(state, 'queue')}
+			${() => navButton(state, 'settings')}
+		</navigation>
 
-	<div class="${() => panelClass('queue')}">
-		${() => mediaQueue(
-			state.mediaqueue,
-			cQueue
-		)}
-	</div>
+		<div class="${() => panelClass('queue')}">
+			${() => mediaQueue(
+				state.mediaqueue,
+				cQueue
+			)}
+		</div>
 
-	<div class="media-player">
-	${() => mediaDisplay(state.mediadisplay, LoadAlbumById, LoadAlbumsByArtistId)}
-	${() => mediaScrubber(state.mediadisplay, apiHowler)}
-	${mediaPlayer(apiHowler, cQueue)}
-	${() => mediaVolume(state.volume, apiHowler)}
-	</div>
+		<div class="media-player">
+			<button @click="${() => state.fullscreen = !state.fullscreen}">Full Screen</button>
+			<div class="media-display fs-only">
+				${() => mediaDisplay(state.mediadisplay, LoadAlbumById, LoadAlbumsByArtistId)}
+			</div>
+			<div class="media-controls">
+				${mediaPlayer(apiHowler, cQueue)}
+				${() => mediaScrubber(state.mediadisplay, apiHowler)}
+				${() => mediaVolume(state.volume, apiHowler)}
+			</div>
+		</div>
 
-	<div class="${() => panelClass('search')}">
-		${() => search(
-			state.searchresults,
-			cSearch,
-			cQueue,
-			LoadAlbumById,
-			LoadAlbumsByArtistId
-		)}
-	</div>
+		<div class="${() => panelClass('search')}">
+			${() => search(
+				state.searchresults,
+				cSearch,
+				cQueue,
+				LoadAlbumById,
+				LoadAlbumsByArtistId
+			)}
+		</div>
 
-	<div class="${() => panelClass('playlists')}">
-		${() => playLists(
-			state.playlists,
-			LoadPlaylistById,
-		)}
+		<div class="${() => panelClass('playlists')}">
+			${() => playLists(
+				state.playlists,
+				LoadPlaylistById,
+			)}
+		</div>
+
+		<div class="${() => panelClass('settings')}">
+			${() => settings(
+				state
+			)}
+		</div>
 	</div>
 `(document.getElementById('arrow'));
 

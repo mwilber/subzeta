@@ -39,9 +39,13 @@ export class ControllerQueue {
         });
     }
 
-    CacheAll(){
+    CacheAll() {
         //TODO: Set a state value here to trigger a spinner. Update the state and the listing from the cache controller
         this.mediaCache.CachePlaylist(this.state.mediaqueue);
+    }
+
+    Shuffle() {
+        
     }
 
     PlayId(id) {

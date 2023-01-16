@@ -1,0 +1,42 @@
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    flex-shrink: 1;
+    height: 50px;
+}
+
+#arrow {
+    display: grid;
+    flex-grow: 1;
+    width: 100%;
+    max-height: calc(100% - 50px);
+    /* grid-template-areas:
+        "nav nav"
+        "panel  queue"
+        "panel  player"; */
+        grid-template-areas:
+        "nav"
+        "panel"
+        "player";
+    grid-template-rows: 50px 2fr 1fr;
+    grid-template-columns: 1fr;
+}
+
+#arrow > navigation {
+    grid-area: nav;
+}
+
+#arrow > .panel {
+    grid-area: panel;
+}
+
+/* #arrow > .panel.queue {
+    grid-area: queue;
+} */
+
+#arrow > .media-player {
+    grid-area: player;
+}

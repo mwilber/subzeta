@@ -3,7 +3,9 @@ import { html } from 'https://cdn.skypack.dev/@arrow-js/core';
 export default (data, queue) => {
     if(data.songs && data.songs.length)
 	return html`
+        <navigation>
         <button @click="${() => queue.CacheAll()}">Cache All</button>
+        </navigation>
         <ul>
             ${() => data.songs.map((song) => html`
                 <li>

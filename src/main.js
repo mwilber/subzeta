@@ -61,7 +61,6 @@ const LoadPlaylistById = async (id) => {
 };
 
 const LoadAlbumById = async (id, autoplay) => {
-	console.log("loading album by id", id)
 	if(!id) return;
 	
 	let playlist = await apiSubsonic.GetAlbum(id);
@@ -78,13 +77,25 @@ const LoadAlbumsByArtistId = async (id) => {
 };
 
 
-const panelClass = (panelName) => state.activepanel === panelName ? 'panel active' : 'panel'
+const panelClass = (panelName) => {
+	const activeClass = (state.activepanel === panelName) ? ' active' : '';
+	return 'panel ' + panelName + activeClass;
+} 
 
 
 html`
-	${() => navButton(state, 'search')}
-	${() => navButton(state, 'playlists')}
-	${() => navButton(state, 'queue')}
+	<navigation>
+		${() => navButton(state, 'search')}
+		${() => navButton(state, 'playlists')}
+		${() => navButton(state, 'queue')}
+	</navigation>
+
+	<div class="${() => panelClass('queue')}">
+		${() => mediaQueue(
+			state.mediaqueue,
+			cQueue
+		)}
+	</div>
 
 	<div class="media-player">
 	${() => mediaDisplay(state.mediadisplay, LoadAlbumById, LoadAlbumsByArtistId)}
@@ -100,13 +111,6 @@ html`
 			cQueue,
 			LoadAlbumById,
 			LoadAlbumsByArtistId
-		)}
-	</div>
-
-	<div class="${() => panelClass('queue')}">
-		${() => mediaQueue(
-			state.mediaqueue,
-			cQueue
 		)}
 	</div>
 

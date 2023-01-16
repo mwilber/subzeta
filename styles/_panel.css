@@ -1,0 +1,16 @@
+.panel {
+    display: none;
+    border: solid #ccc 1px;
+    overflow: scroll;
+}
+
+/* @media (max-width: var(--phone)) {
+    .panel {
+        display: none;
+    }
+} */
+
+.active {
+    display: block;
+    border: solid red 2px;
+}

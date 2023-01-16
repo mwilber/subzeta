@@ -19,3 +19,4 @@ jobs:
           localDir: '.'                              # Required, Absolute or relative to cwd.
           remoteDir: '/'                             # Required, Absolute path only.
           exclude: '.git*,.DS_Store'                 # Optional. exclude patterns (glob), use ',' to split, Default to ''.
+          dryRun: true

@@ -19,4 +19,4 @@ jobs:
           localDir: '.'                              # Required, Absolute or relative to cwd.
           remoteDir: '/home/greenzeta/staging.greenzeta.com/subsonic/'                             # Required, Absolute path only.
           exclude: '.git*,.DS_Store'                 # Optional. exclude patterns (glob), use ',' to split, Default to ''.
-          dryRun: true
+          dryRun: false

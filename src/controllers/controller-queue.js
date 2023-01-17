@@ -45,7 +45,19 @@ export class ControllerQueue {
     }
 
     Shuffle() {
+        let tmpQueue = JSON.parse(JSON.stringify(this.state.mediaqueue));
         
+        /* Shuffle the playlist using Durstenfeld algorithm */
+		for (let i = tmpQueue.songs.length - 1; i > 0; i--) {
+			let j = Math.floor(Math.random() * (i + 1));
+			let temp = tmpQueue.songs[i];
+			tmpQueue.songs[i] = tmpQueue.songs[j];
+			tmpQueue.songs[j] = temp;
+		}
+
+        console.log("temp queue", tmpQueue);
+        this.state.mediaqueue = tmpQueue;
+        this.state.mediaselection = -1;
     }
 
     PlayId(id) {

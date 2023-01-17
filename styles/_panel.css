@@ -1,17 +1,17 @@
 .panel {
-    display: none;
-    border: solid #ccc 1px;
-    overflow-x: hidden;
-    overflow-y: auto;
+	display: none;
+	border: solid #ccc 1px;
+	overflow-x: hidden;
+	overflow-y: auto;
 }
 
 /* @media (max-width: var(--phone)) {
-    .panel {
-        display: none;
-    }
+	.panel {
+		display: none;
+	}
 } */
 
 .active {
-    display: block;
-    border: solid red 2px;
+	display: block;
+	border: solid red 2px;
 }

@@ -1,49 +1,49 @@
 .media-player {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    background: #999;
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	background: #999;
 }
 
 .media-player .media-display {
-    width: 100%;
-    flex:2;
+	width: 100%;
+	flex:2;
 }
 
 .media-player .media-controls {
-    display: flex;
-    width: 100%;
-    flex-wrap: wrap;
-    flex:1;
+	display: flex;
+	width: 100%;
+	flex-wrap: wrap;
+	flex:1;
 }
 
 .media-player .media-player-buttons {
-    display: flex;
-    width: 100%;
+	display: flex;
+	width: 100%;
 }
 
 .media-player .media-player-buttons button {
-    flex: 1;
+	flex: 1;
 }
 
 .media-player .media-player-buttons button#media-button-pause,
 .playing .media-player .media-player-buttons button#media-button-play {
-    display: none;
+	display: none;
 }
 
 .playing .media-player .media-player-buttons button#media-button-pause {
-    display: initial;
+	display: initial;
 }
 
 .media-player .scrubber{
-    width: 100%;
+	width: 100%;
 }
 
 .media-player .fs-only
  {
-    display: none;
+	display: none;
 }
 
 .fullscreen .media-player .fs-only {
-    display: block;
+	display: block;
 }

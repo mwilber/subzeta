@@ -1,10 +1,10 @@
 export class ApiHowler {
-    constructor(state, mediaSession) {
-        this.state = state;
+	constructor(state, mediaSession) {
+		this.state = state;
 		this.mediaSession = mediaSession;
-        this.meta = null;
+		this.meta = null;
 		this.onEnd = null;
-    }
+	}
 
 	_formatTime(secs) {
 		var minutes = Math.floor(secs / 60) || 0;
@@ -13,12 +13,12 @@ export class ApiHowler {
 		return minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
 	}
 
-    PlayMediaSelection(){
-        if(this.state.mediaselection < 0) return;
-        const selectedSong = this.state.mediaqueue.songs[this.state.mediaselection];
-        if(selectedSong.src && selectedSong.src[0]) {
-            console.log("found song at index", this.state.mediaselection);
-            this.meta = {
+	PlayMediaSelection(){
+		if(this.state.mediaselection < 0) return;
+		const selectedSong = this.state.mediaqueue.songs[this.state.mediaselection];
+		if(selectedSong.src && selectedSong.src[0]) {
+			console.log("found song at index", this.state.mediaselection);
+			this.meta = {
 				title: selectedSong.title,
 				artist: selectedSong.artist,
 				artistId: selectedSong.artistId,
@@ -27,13 +27,13 @@ export class ApiHowler {
 				artwork: JSON.parse(JSON.stringify(selectedSong.coverArt)),
 				src: selectedSong.src[0]
 			};
-            console.log("🚀 ~ file: media-player.js ~ line 113 ~ extends ~ PlaySongObject ~ this.meta", this.meta)
-            this.PlaySongObject();
-        }
-    }
+			console.log("🚀 ~ file: media-player.js ~ line 113 ~ extends ~ PlaySongObject ~ this.meta", this.meta)
+			this.PlaySongObject();
+		}
+	}
 
-    PlaySongObject(){
-        
+	PlaySongObject(){
+		
 		if(!this.meta || !this.meta.src) return;
 		this.UnloadSongObject();
 		this.howl = new Howl({
@@ -89,10 +89,10 @@ export class ApiHowler {
 		this.Play();
 	}
 
-    UnloadSongObject(){
-        console.log('Unloading audio file', this.howl);
-        if(this.howl && this.howl.unload) this.howl.unload();
-    }
+	UnloadSongObject(){
+		console.log('Unloading audio file', this.howl);
+		if(this.howl && this.howl.unload) this.howl.unload();
+	}
 
 	Step(){
 		let self = this;
@@ -119,16 +119,16 @@ export class ApiHowler {
 		}
 	}
 
-    /**
-     * UI Control Functions
-     */
+	/**
+	 * UI Control Functions
+	 */
 
 	Play(){
 		if(!this.howl) this.PlayMediaSelection();
 		if(!this.howl.playing()) this.howl.play();
 	}
 
-    Pause(){
+	Pause(){
 		if(this.howl && this.howl.playing())
 			this.howl.pause();
 	}

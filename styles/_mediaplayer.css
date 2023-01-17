@@ -26,6 +26,15 @@
     flex: 1;
 }
 
+.media-player .media-player-buttons button#media-button-pause,
+.playing .media-player .media-player-buttons button#media-button-play {
+    display: none;
+}
+
+.playing .media-player .media-player-buttons button#media-button-pause {
+    display: initial;
+}
+
 .media-player .scrubber{
     width: 100%;
 }

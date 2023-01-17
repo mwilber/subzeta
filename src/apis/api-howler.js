@@ -48,6 +48,7 @@ export class ApiHowler {
 				this.state.mediadisplay.duration = this._formatTime(Math.round(this.howl.duration()));
 				// Update the media session api
 				this.mediaSession.SetState(1);
+				this.state.playing = true;
 				// Start upating the progress of the track.
 				requestAnimationFrame(this.Step.bind(this));
 			},
@@ -56,18 +57,21 @@ export class ApiHowler {
 				//this.noSleep.disable();
 				// Update the media session api
 				this.mediaSession.SetState(2);
+				this.state.playing = false;
 			},
 			onstop: ()=>{
 				// Disable wake lock
 				//this.noSleep.disable();
 				// Update the media session api
 				this.mediaSession.SetState(0);
+				this.state.playing = false;
 			},
 			onend: ()=>{
 				// Disable wake lock
 				//this.noSleep.disable();
 				// Update the media session api
 				this.mediaSession.SetState(0);
+				this.state.playing = false;
 			}
 		});
 

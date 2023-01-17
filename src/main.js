@@ -38,6 +38,7 @@ let defaultState = {
 	volume: 100,
 	activepanel: "playlists",
 	fullscreen: false,
+	playing: false,
 	settings: {
 		server: "",
 		user: "",
@@ -49,6 +50,9 @@ if(localStorage) {
 	let savedState = localStorage.getItem('subzeta-state');
 	if(savedState && savedState !== null)
 		defaultState = JSON.parse(savedState);
+
+	// Reset values
+	defaultState.playing = false;
 }
 const state = reactive(defaultState);
 
@@ -102,13 +106,21 @@ const LoadAlbumsByArtistId = async (id) => {
 
 
 const panelClass = (panelName) => {
-	const activeClass = (state.activepanel === panelName) ? ' active' : '';
-	return 'panel ' + panelName + activeClass;
-} 
+	let className = 'panel ' + panelName;
+	className += (state.activepanel === panelName) ? ' active' : '';
+	return className;
+}
+
+const wrapperClass = () => {
+	let className = 'wrapper';
+	className += state.fullscreen ? ' fullscreen' : '';
+	className += state.playing ? ' playing' : '';
+	return className;
+}
 
 
 html`
-	<div class="${() => state.fullscreen ? "wrapper fullscreen" : "wrapper"}">
+	<div class="${() => wrapperClass()}">
 		<navigation>
 			${() => navButton(state, 'search')}
 			${() => navButton(state, 'playlists')}

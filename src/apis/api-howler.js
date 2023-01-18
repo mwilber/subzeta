@@ -125,7 +125,7 @@ export class ApiHowler {
 
 	Play(){
 		if(!this.howl) this.PlayMediaSelection();
-		if(!this.howl.playing()) this.howl.play();
+		else if(!this.howl.playing()) this.howl.play();
 	}
 
 	Pause(){

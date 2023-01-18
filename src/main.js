@@ -66,7 +66,7 @@ const apiSubsonic = new ApiSubsonic(state.settings);
 const apiMediaSession = new ApiMediaSession();
 const apiHowler = new ApiHowler(state, apiMediaSession);
 
-const cCache = new ControllerCache('media_v0.11', state);
+const cCache = new ControllerCache('media_v0.12', state);
 const cQueue = new ControllerQueue(state, apiHowler, cCache);
 const cSearch = new ControllerSearch(state, apiSubsonic);
 

@@ -24,9 +24,9 @@ export class ApiHowler {
 				artistId: selectedSong.artistId,
 				album: selectedSong.album,
 				albumId: selectedSong.albumId,
+				artwork: JSON.parse(JSON.stringify(selectedSong.coverArt)),
 				src: selectedSong.src[0]
 			};
-			this.meta.artwork = (selectedSong.coverArt && selectedSong.coverArt.length > 0) ? selectedSong.coverArt[0].src : '';
 			console.log("🚀 ~ file: media-player.js ~ line 113 ~ extends ~ PlaySongObject ~ this.meta", this.meta)
 			this.PlaySongObject();
 		}
@@ -79,8 +79,11 @@ export class ApiHowler {
 			if(this.onEnd) this.onEnd();
 		});
 
+		const artworkSrc = (this.meta.coverArt && this.meta.coverArt.length > 0) ? this.meta.coverArt[0].src : '';
+
 		this.state.mediadisplay = {
 			...this.meta,
+			artwork: artworkSrc,
 			time: this._formatTime(0),
 			duration: '--'
 		};

@@ -16,4 +16,5 @@ export default (state) => html`
 		<input id="login-password" type="text" placeholder="Password" value="${state.settings.pass}" />
 		<input type="submit" class="search" value="Save" />
 	</form>
+	<button @click="${() => window.swUpdate()}">Update SW</button>
 `

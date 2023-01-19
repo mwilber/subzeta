@@ -18,14 +18,21 @@ import playLists from './components/playlists.js';
 import search from './components/search.js';
 import navButton from './components/nav-button.js';
 
+window.swUpdate = () => {
+	alert("Service Worker is not registered.")
+}
 if ('serviceWorker' in navigator) {
-    // window.addEventListener('load', () => {
-    //     navigator.serviceWorker.register('../service-worker.js').then(registration => {
-    //         console.log('SW registered: ', registration);
-    //     }).catch(registrationError => {
-    //         console.log('SW registration failed: ', registrationError);
-    //     });
-    // });
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('../service-worker.js').then(registration => {
+            console.log('SW registered: ', registration);
+			window.swUpdate = () => {
+				registration.update();
+				alert("Update command issued. Reload the app.")
+			};
+        }).catch(registrationError => {
+            console.log('SW registration failed: ', registrationError);
+        });
+    });
 }
 
 let defaultState = {

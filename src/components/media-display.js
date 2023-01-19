@@ -8,5 +8,5 @@ export default (data, loadAlbum, loadArtist) =>
 		<div id="display-artist">Artist: <button @click="${() => {loadArtist(data.artistId)}}">${data.artist}</button></div>
 		<div id="display-time">Time: ${data.time}</div>
 		<div id="display-duration">Duration: ${data.duration}</div>
-		<!--<div id="display-artwork"><img src="${data.artwork[0].src}" /></div>-->
+		<!--<div id="display-artwork"><img src="${data.artwork}" /></div>-->
 	`;

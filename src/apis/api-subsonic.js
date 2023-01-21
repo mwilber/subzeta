@@ -145,7 +145,7 @@ export class ApiSubsonic{
 	GetSearch2(query){
 		if(!query) return;
 
-		return fetch(this.GetServerQuery('search2',{query: query, songCount: 2}))
+		return fetch(this.GetServerQuery('search2',{query: query, songCount: 50}))
 			.then(response => response.json())
 			.then(
 				(data)=>{

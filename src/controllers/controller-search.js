@@ -6,8 +6,9 @@ export class ControllerSearch {
 
 	async Search(e) {
 
-		e.preventDefault()
-		const input = document.getElementById('search-query')
+		e.preventDefault();
+		this.state.activepanel = 'search';
+		const input = document.getElementById('search-query');
 		
 		console.log("Searching for", input.value);
 		
@@ -15,7 +16,7 @@ export class ControllerSearch {
 		console.log("search result: ", this.listing);
 		if(!this.listing) return;
 		this.state.searchresults = this.listing;
-		input.value = ''
+		input.value = '';
 
 	}
 }

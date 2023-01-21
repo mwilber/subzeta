@@ -35,7 +35,11 @@ export class ControllerQueue {
 			this.state.mediaqueue = {...data, songs: cacheData};
 			this.state.mediaselection = 0;
 			console.log("Queue Data Loaded", this.state.mediaqueue);
-			if(autoplay) this.PlayFirst();
+			if(autoplay){
+				this.PlayFirst();
+				this.state.activepanel = 'queue';
+				this.state.fullscreen = true;
+			}
 		});
 	}
 

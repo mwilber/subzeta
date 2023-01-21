@@ -93,6 +93,7 @@ const LoadPlaylistById = async (id) => {
 	let playlist = await apiSubsonic.GetPlaylist(id);
 	cQueue.LoadData(playlist);
 	state.activepanel = 'queue';
+	state.fullscreen = false;
 };
 
 const LoadAlbumById = async (id, autoplay) => {
@@ -101,6 +102,7 @@ const LoadAlbumById = async (id, autoplay) => {
 	let playlist = await apiSubsonic.GetAlbum(id);
 	cQueue.LoadData(playlist, autoplay);
 	state.activepanel = 'queue';
+	state.fullscreen = false;
 };
 
 const LoadAlbumsByArtistId = async (id) => {
@@ -109,6 +111,7 @@ const LoadAlbumsByArtistId = async (id) => {
 	let albums = await apiSubsonic.GetArtistAlbums(id);
 	state.searchresults = albums;
 	state.activepanel = 'search';
+	state.fullscreen = false;
 };
 
 

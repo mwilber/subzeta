@@ -1,9 +1,9 @@
 import { html } from 'https://cdn.skypack.dev/@arrow-js/core';
 
 export default (results, controller, queue, loadAlbum, loadArtist) => html`
-	<form @submit="${controller.Search.bind(controller)}">
+	<form id="search-form" @submit="${controller.Search.bind(controller)}">
 		<input id="search-query" type="text" name="query" placeholder="Search" value="" />
-		<input type="submit" class="search" value="Go" />
+		<input id="search-submit" type="submit" class="search" value="Go" />
 	</form>
 	${() => {
 		if(results.artists && results.artists.length)
@@ -54,6 +54,7 @@ export default (results, controller, queue, loadAlbum, loadArtist) => html`
 		if(results.songs && results.songs.length)
 			return html`
 			<h2>Songs</h2>
+				<button @click="${() => queue.LoadData(results, true)}">Play All</button>
 				<ul>
 					${() => results.songs.map((song) => {
 						return html`

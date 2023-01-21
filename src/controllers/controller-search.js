@@ -8,6 +8,7 @@ export class ControllerSearch {
 
 		e.preventDefault();
 		this.state.activepanel = 'search';
+		this.state.fullscreen = false;
 		const input = document.getElementById('search-query');
 		
 		console.log("Searching for", input.value);

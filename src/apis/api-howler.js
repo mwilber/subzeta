@@ -79,7 +79,8 @@ export class ApiHowler {
 			if(this.onEnd) this.onEnd();
 		});
 
-		const artworkSrc = (this.meta.coverArt && this.meta.coverArt.length > 0) ? this.meta.coverArt[0].src : '';
+		console.log("SETTING COVER ART", this.meta)
+		const artworkSrc = (this.meta.artwork && this.meta.artwork.length > 0) ? this.meta.artwork[0].src : '';
 
 		this.state.mediadisplay = {
 			...this.meta,

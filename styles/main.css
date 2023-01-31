@@ -4,12 +4,6 @@
 @import url(_navigation.css);
 @import url(_mediaplayer.css);
 
-:root {
-	--phone: 480px;
-	--tablet: 768px;
-	--desktop: 1024px;
-}
-
 
   /* @media (max-width: var(--phone)) {
 

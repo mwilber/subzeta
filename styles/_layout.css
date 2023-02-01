@@ -6,11 +6,13 @@ body {
 }
 
 header {
-	height: 50px;
+	height: 30px;
+    font-size: 1.25em;
+    line-height: 1.25em;
 }
 
 #arrow {
-	height: calc(100% - 50px);
+	height: calc(100% - 30px);
 }
 
 .wrapper {

@@ -21,7 +21,8 @@ import navButton from './components/nav-button.js';
 window.swUpdate = () => {
 	alert("Service Worker is not registered.")
 }
-if ('serviceWorker' in navigator) {
+//if ('serviceWorker' in navigator) {
+if (false) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('../service-worker.js').then(registration => {
             console.log('SW registered: ', registration);
@@ -183,3 +184,15 @@ html`
 `(document.getElementById('arrow'));
 
 window.state = state;
+
+window.HandleImg = function (el) {
+	//console.log("*** image loaded", el);
+	const mediaPlayerEl = document.querySelector('.media-player');
+	if (!el || !mediaPlayerEl || !ColorThief) return;
+	const colorThief = new ColorThief();
+	const color = colorThief.getColor(el);
+	//console.log("color", color);
+	mediaPlayerEl.style.backgroundColor = `rgb(${color[0]},${color[1]},${color[2]})`;
+		// .then(color => { console.log(color) })
+		// .catch(err => { console.log(err) });
+}

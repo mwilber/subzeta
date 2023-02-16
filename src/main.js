@@ -11,6 +11,8 @@ import { ControllerSearch } from './controllers/controller-search.js';
 import mediaPlayer from './components/media-player.js';
 import mediaQueue from './components/media-queue.js';
 import mediaDisplay from './components/media-display.js';
+import mediaArt from './components/media-art.js';
+import mediaTime from './components/media-time.js';
 import mediaScrubber from './components/media_scrubber.js';
 import mediaVolume from './components/media_volume.js';
 import settings from './components/settings.js';
@@ -148,13 +150,21 @@ html`
 
 		<div class="media-player">
 			<button @click="${() => state.fullscreen = !state.fullscreen}">Full Screen</button>
-			<div class="media-display fs-only">
-				${() => mediaDisplay(state.mediadisplay, LoadAlbumById, LoadAlbumsByArtistId)}
+			<div class="media-art fs-only">
+				${() => mediaArt(state.mediadisplay)}
 			</div>
-			<div class="media-controls">
-				${mediaPlayer(apiHowler, cQueue)}
-				${() => mediaScrubber(state.mediadisplay, apiHowler)}
-				${() => mediaVolume(state.volume, apiHowler)}
+			<div class="media-interface">
+				<div class="media-display fs-only">
+					${() => mediaDisplay(state.mediadisplay, LoadAlbumById, LoadAlbumsByArtistId)}
+				</div>
+				<div class="media-time">
+					${() => mediaTime(state.mediadisplay)}
+				</div>
+				<div class="media-controls">
+					${mediaPlayer(apiHowler, cQueue)}
+					${() => mediaScrubber(state.mediadisplay, apiHowler)}
+					${() => mediaVolume(state.volume, apiHowler)}
+				</div>
 			</div>
 		</div>
 

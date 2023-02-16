@@ -15,10 +15,4 @@ export default (data, loadAlbum, loadArtist) =>
 				}}">Search</button>
 			</div>
 		</div>
-		<div class="time">
-			<div id="display-time">Time: ${data.time}</div>
-			<div id="display-duration">Duration: ${data.duration}</div>
-		</div>
-		<!--<div id="display-artwork" style="background-image: url('${data.artwork}')"></div>-->
-		<img id="display-artwork" src="${data.artwork}" crossorigin="Anonymous" onload="HandleImg(this)" />
 	`;

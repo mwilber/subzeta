@@ -86,7 +86,8 @@ export class ApiHowler {
 			...this.meta,
 			artwork: artworkSrc,
 			time: this._formatTime(0),
-			duration: '--'
+			duration: '--',
+			remaining: '--'
 		};
 
 		this.mediaSession.UpdateMeta(this.meta);
@@ -108,6 +109,7 @@ export class ApiHowler {
 		let seek = sound.seek() || 0;
 		let duration = this.howl.duration();
 		this.state.mediadisplay.time = self._formatTime(Math.round(seek));
+		this.state.mediadisplay.remaining = self._formatTime(Math.round(duration - seek));
 		this.state.mediadisplay.progress = Math.floor((seek/duration)*100);
 
 		// Update the media session api

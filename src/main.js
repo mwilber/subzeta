@@ -23,8 +23,8 @@ import navButton from './components/nav-button.js';
 window.swUpdate = () => {
 	alert("Service Worker is not registered.")
 }
-//if ('serviceWorker' in navigator) {
-if (false) {
+if ('serviceWorker' in navigator) {
+//if (false) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('../service-worker.js').then(registration => {
             console.log('SW registered: ', registration);

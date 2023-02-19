@@ -18,38 +18,42 @@ export default (audioApi, queueController) =>
 					</svg>
 				</button>
 				<button id="media-button-reverse" @click="${() => audioApi.Jump(10, true)}" class="fs-only">Reverse</button>
-				<button id="media-button-play" @click="${() => audioApi.Play()}">
-					<svg
-						id="icon-play" 
-						version="1.1" 
-						xmlns="http://www.w3.org/2000/svg" 
-						xmlns:xlink="http://www.w3.org/1999/xlink" 
-						x="0px" 
-						y="0px" 
-						viewBox="0 0 300 300" 
-						xml:space="preserve"
-					>
-						<g>
-							<path d="M150.27,0.18c-82.84,0-150,67.16-150,150s67.16,150,150,150s150-67.16,150-150S233.12,0.18,150.27,0.18z M118,206.5V93.87c0-4.3,4.66-6.99,8.38-4.84l72.75,56.32c3.73,2.15,3.73,7.53,0,9.68l-72.75,56.32C122.66,213.49,118,210.8,118,206.5z"/>
-						</g>
-				   </svg>
-				</button>
-				<button id="media-button-pause" @click="${() => audioApi.Pause()}">
-					<svg
-						version="1.1"
-						id="icon-pause"
-						xmlns="http://www.w3.org/2000/svg"
-						xmlns:xlink="http://www.w3.org/1999/xlink"
-						x="0px"
-						y="0px"
-						viewBox="0 0 300 300"
-						xml:space="preserve"
-					>
-						<g>
-							<path d="M150.27,0.18c-82.84,0-150,67.16-150,150s67.16,150,150,150c82.84,0,150-67.16,150-150S233.12,0.18,150.27,0.18zM139.95,208c0,2.17-1.76,3.92-3.92,3.92h-25.03c-2.17,0-3.92-1.76-3.92-3.92V92.37c0-2.17,1.76-3.92,3.92-3.92h25.03c2.17,0,3.92,1.76,3.92,3.92V208z M193.47,208c0,2.17-1.76,3.92-3.92,3.92h-24.08c-2.17,0-3.92-1.76-3.92-3.92V92.37c0-2.17,1.76-3.92,3.92-3.92h24.08c2.17,0,3.92,1.76,3.92,3.92V208z"/>
-						</g>
+				<div class="progress-container">
+					<div class="progress-bar">
+					</div>
+					<button id="media-button-play" @click="${() => audioApi.Play()}">
+						<svg
+							id="icon-play" 
+							version="1.1" 
+							xmlns="http://www.w3.org/2000/svg" 
+							xmlns:xlink="http://www.w3.org/1999/xlink" 
+							x="0px" 
+							y="0px" 
+							viewBox="0 0 300 300" 
+							xml:space="preserve"
+						>
+							<g>
+								<path d="M150.27,0.18c-82.84,0-150,67.16-150,150s67.16,150,150,150s150-67.16,150-150S233.12,0.18,150.27,0.18z M118,206.5V93.87c0-4.3,4.66-6.99,8.38-4.84l72.75,56.32c3.73,2.15,3.73,7.53,0,9.68l-72.75,56.32C122.66,213.49,118,210.8,118,206.5z"/>
+							</g>
 					</svg>
-				</button>
+					</button>
+					<button id="media-button-pause" @click="${() => audioApi.Pause()}">
+						<svg
+							version="1.1"
+							id="icon-pause"
+							xmlns="http://www.w3.org/2000/svg"
+							xmlns:xlink="http://www.w3.org/1999/xlink"
+							x="0px"
+							y="0px"
+							viewBox="0 0 300 300"
+							xml:space="preserve"
+						>
+							<g>
+								<path d="M150.27,0.18c-82.84,0-150,67.16-150,150s67.16,150,150,150c82.84,0,150-67.16,150-150S233.12,0.18,150.27,0.18zM139.95,208c0,2.17-1.76,3.92-3.92,3.92h-25.03c-2.17,0-3.92-1.76-3.92-3.92V92.37c0-2.17,1.76-3.92,3.92-3.92h25.03c2.17,0,3.92,1.76,3.92,3.92V208z M193.47,208c0,2.17-1.76,3.92-3.92,3.92h-24.08c-2.17,0-3.92-1.76-3.92-3.92V92.37c0-2.17,1.76-3.92,3.92-3.92h24.08c2.17,0,3.92,1.76,3.92,3.92V208z"/>
+							</g>
+						</svg>
+					</button>
+				</div>
 				<button id="media-button-forward" @click="${() => audioApi.Jump(10, false)}" class="fs-only">Forward</button>
 				<button id="media-button-next" @click="${() => queueController.PlayNext()}">
 					<svg

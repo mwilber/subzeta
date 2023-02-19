@@ -20,11 +20,12 @@ import playLists from './components/playlists.js';
 import search from './components/search.js';
 import navButton from './components/nav-button.js';
 
+const disableSW = true;
+
 window.swUpdate = () => {
 	alert("Service Worker is not registered.")
 }
-if ('serviceWorker' in navigator) {
-//if (false) {
+if (!disableSW && 'serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('../service-worker.js').then(registration => {
             console.log('SW registered: ', registration);

@@ -1,4 +1,4 @@
-import { reactive, watch, html } from 'https://cdn.skypack.dev/@arrow-js/core';
+import { reactive, watch, html } from './vendor/@arrow-js/core/index.min.mjs';
 
 import { ApiSubsonic } from './apis/api-subsonic.js';
 import { ApiHowler } from './apis/api-howler.js';

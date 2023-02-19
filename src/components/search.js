@@ -1,4 +1,4 @@
-import { html } from 'https://cdn.skypack.dev/@arrow-js/core';
+import { html } from '../vendor/@arrow-js/core/index.min.mjs';
 
 export default (results, controller, queue, loadAlbum, loadArtist) => html`
 	<form id="search-form" @submit="${controller.Search.bind(controller)}">

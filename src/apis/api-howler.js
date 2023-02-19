@@ -112,6 +112,10 @@ export class ApiHowler {
 		this.state.mediadisplay.remaining = self._formatTime(Math.round(duration - seek));
 		this.state.mediadisplay.progress = Math.floor((seek/duration)*100);
 
+		// Update the progress circle
+		const progressCircleEl = document.querySelector('.progress-bar svg .circle');
+		progressCircleEl.style.strokeDasharray = this.state.mediadisplay.progress+",100";
+
 		// Update the media session api
 		this.mediaSession.UpdatePosition({
 			duration: duration,

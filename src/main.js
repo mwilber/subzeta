@@ -150,7 +150,20 @@ html`
 		</div>
 
 		<div class="media-player">
-			<button @click="${() => state.fullscreen = !state.fullscreen}">Full Screen</button>
+			<button class="button-fullscreen" @click="${() => state.fullscreen = !state.fullscreen}">
+			<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+			viewBox="0 0 100 25" style="enable-background:new 0 0 100 25;" xml:space="preserve">
+				<g>
+					<line x1="0" y1="6.25" x2="100" y2="6.25"/>
+				</g>
+				<g>
+					<line x1="0" y1="12.5" x2="100" y2="12.5"/>
+				</g>
+				<g>
+					<line x1="0" y1="18.75" x2="100" y2="18.75"/>
+				</g>
+				</svg>
+			</button>
 			<div class="media-art fs-only">
 				${() => mediaArt(state.mediadisplay)}
 			</div>
@@ -200,17 +213,28 @@ window.HandleImg = function (el) {
 	//console.log("*** image loaded", el);
 	const mediaPlayerEl = document.querySelector('.media-player');
 	const mediaInterfaceEl = document.querySelector('.media-interface');
+	const progressRouteEl = document.querySelector('.progress-bar svg path.route');
+	const progressCircleEl = document.querySelector('.progress-bar svg path.circle');
+	const fullScreenEl = document.querySelector('.media-player .button-fullscreen');
 	if (!el || !mediaPlayerEl || !ColorThief) return;
 	const colorThief = new ColorThief();
 	const color = colorThief.getColor(el);
+	const kVal = BlackOrWhite(color[0], color[1], color[2]);
 	//console.log("color", color);
 	mediaPlayerEl.style.backgroundColor = `rgb(${color[0]},${color[1]},${color[2]})`;
-	mediaInterfaceEl.style.color = BlackOrWhite(color[0], color[1], color[2]);
-	mediaInterfaceEl.style.fill = BlackOrWhite(color[0], color[1], color[2]);
+	mediaInterfaceEl.style.color = kVal;
+	mediaInterfaceEl.style.fill = kVal;
+	progressRouteEl.style.stroke = kVal;
+	progressCircleEl.style.stroke = kVal;
+
+	fullScreenEl.style.backgroundColor = kVal === 'black' ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.15)';
+	fullScreenEl.style.stroke = `rgb(${color[0]},${color[1]},${color[2]})`;
+	fullScreenEl.style.stroke = kVal;
+
 		// .then(color => { console.log(color) })
 		// .catch(err => { console.log(err) });
 }
 
 window.BlackOrWhite = function (red, green, blue) {
-	return ((red*0.299 + green*0.587 + blue*0.114) > 152) ? "black" : "white";
+	return ((red*0.299 + green*0.587 + blue*0.114) > 160) ? "black" : "white";
 }

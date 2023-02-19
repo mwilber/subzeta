@@ -1,9 +1,31 @@
 .media-player {
 	display: grid;
 	grid-template-columns: 1fr;
-	grid-template-rows: 30px 1fr;
+	grid-template-rows: 25px 1fr;
 	height: 100%;
 	background: #999;
+}
+
+.media-player button {
+	border: none;
+    background: none;
+    box-shadow: none;
+	color: inherit;
+}
+
+.media-player .button-fullscreen {
+	height: 100%;
+}
+
+.media-player .button-fullscreen svg {
+	height: 100%;
+}
+
+.media-player .button-fullscreen svg line {
+	stroke-width: 2px;
+    stroke-opacity: 0.25;
+    stroke-dasharray: 0, 4;
+    stroke-linecap: round;
 }
 
 .media-player .media-interface {
@@ -25,7 +47,7 @@
 	height: 100%;
 	background-size: contain;
 	background-repeat: no-repeat;
-	background-position: top center;
+	background-position: center;
 }
 
 .media-player .media-display {
@@ -45,6 +67,10 @@
 	background-color: transparent;
 	background-position: center;
 	background-size: cover; 
+}
+
+.media-player .media-display button {
+	border-bottom: 1px dotted;
 }
 
 .media-player .media-time {
@@ -105,27 +131,36 @@
 .media-player .media-player-buttons .progress-container .progress-bar {
 	position: absolute;
 	width: 100%;
-	height: 100%;
+	/* height: 100%; */
+	padding-bottom: 100%;
+	top:50%;
+	transform: translate(0, -50%);
+	/* padding-bottom: 50%;
+	top: 50%;
+	transform: translate(0, -50%); */
 }
 
 .media-player .media-player-buttons .progress-container .progress-bar svg { 
 	position: absolute;
 	display: block;
-	margin: 10px auto;
-	width: 100%
+	margin: 5%;
+	width: 90%;
+	height: 90%;
 }
 
 .media-player .media-player-buttons .progress-container .progress-bar .circle, 
 .media-player .media-player-buttons .progress-container .progress-bar .route {
 	stroke: black;
 	fill: none;
-	stroke-width: 3.8;
-	stroke-linecap: flat;
-	animation: progress 1s ease-out forwards;
+	stroke-width: 2px;
+	stroke-linecap: round;
+	stroke-opacity: 0.25;
+	transition: all 500ms cubic-bezier(0.680, -0.550, 0.265, 1.550);
 }
 
-.media-player .media-player-buttons .progress-container .progress-bar .route { 
-	stroke: #dddddd;
+.media-player .media-player-buttons .progress-container .progress-bar .circle { 
+	stroke-opacity: 0.9;
+	stroke: white !important;
 }
 
 .media-player .media-player-buttons button#media-button-play,
@@ -176,7 +211,7 @@
 @media (max-width: 768px) {
 
 	.fullscreen .media-player {
-		grid-template-rows: 30px 1fr 100vw;
+		grid-template-rows: 25px 1fr 100vw;
 	}
 
 	.fullscreen .media-player .media-controls .volume,
@@ -191,7 +226,7 @@
 @media (max-width: 768px) and (orientation: landscape) {
 	.fullscreen .media-player {
 		grid-template-columns: 1fr 100vh;
-		grid-template-rows: 30px 1fr;
+		grid-template-rows: 25px 1fr;
 	}
 
 	.media-player > button {
@@ -199,6 +234,6 @@
 	}
 
 	.media-player .media-art #display-artwork {
-		background-position: center left;
+		/* background-position: center left; */
 	}
 }

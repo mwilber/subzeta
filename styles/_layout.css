@@ -3,16 +3,18 @@ body {
 	max-height: 100%;
 	height:100%;
 	/* overflow: hidden; */
+	font-family: 'Roboto', sans-serif;
 }
 
 header {
+	display: none;;
 	height: 30px;
     font-size: 1.25em;
     line-height: 1.25em;
 }
 
 #arrow {
-	height: calc(100% - 30px);
+	height: calc(100%);
 }
 
 .wrapper {

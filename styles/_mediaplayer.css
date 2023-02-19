@@ -78,8 +78,8 @@
 	display: flex;
 	flex-direction: row;
 	font-size: 30px;
-	line-height: 30px;
-	font-weight: bold;
+	line-height: 45px;
+	font-weight: normal;
 }
 
 .media-player .media-time > * {

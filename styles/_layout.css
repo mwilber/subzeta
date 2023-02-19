@@ -51,9 +51,20 @@ header {
 	grid-template-areas:
 		"player";
 	grid-template-rows: 1fr;
+	grid-template-columns: 1fr;
 }
 
 .wrapper.fullscreen .panel,
 .wrapper.fullscreen navigation{
 	display: none;
+}
+
+@media (min-width: 730px) {
+	.wrapper {
+		grid-template-areas:
+			"nav player"
+			"panel player";
+		grid-template-rows: 50px 1fr;
+		grid-template-columns: 2fr 1fr;
+	}
 }

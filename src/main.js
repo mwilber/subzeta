@@ -206,10 +206,11 @@ window.HandleImg = function (el) {
 	//console.log("color", color);
 	mediaPlayerEl.style.backgroundColor = `rgb(${color[0]},${color[1]},${color[2]})`;
 	mediaInterfaceEl.style.color = BlackOrWhite(color[0], color[1], color[2]);
+	mediaInterfaceEl.style.fill = BlackOrWhite(color[0], color[1], color[2]);
 		// .then(color => { console.log(color) })
 		// .catch(err => { console.log(err) });
 }
 
 window.BlackOrWhite = function (red, green, blue) {
-	return ((red*0.299 + green*0.587 + blue*0.114) > 186) ? "black" : "white";
+	return ((red*0.299 + green*0.587 + blue*0.114) > 152) ? "black" : "white";
 }

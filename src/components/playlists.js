@@ -14,7 +14,7 @@ export default (data, loadPl) => {
 							data-name="${name}"
 							data-songcount="${songCount}"
 						>
-							${name} (${songCount})
+							${name} <span>${songCount}</span>
 						</button>
 					</li>
 				`.key(id);

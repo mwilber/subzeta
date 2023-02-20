@@ -15,6 +15,28 @@ header {
     line-height: 1.25em;
 }
 
+ul {
+	margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+button {
+	background: var(--theme-color-lt);
+	border: solid 1px var(--theme-color-md);
+	border-radius: 0;
+}
+
+
+ul li button {
+	width: 100%;
+	padding: 1em 1.5em;
+	background: var(--theme-bg);
+	border: none;
+	border-bottom: solid 1px var(--theme-color-lt);
+	text-align: left;
+}
+
 #arrow {
 	height: calc(100%);
 }

@@ -5,12 +5,33 @@
 	overflow-y: auto;
 }
 
-/* @media (max-width: var(--phone)) {
-	.panel {
-		display: none;
-	}
-} */
-
 .active {
 	display: block;
+}
+
+ul li button span {
+	float: right;
+}
+
+
+.playlists ul li button span {
+	font-style: oblique;
+	color: var(--theme-color-md);
+}
+
+.queue navigation button {
+	width: auto;
+	padding: 0.5em 1em;
+	background: transparent;
+	border: none;
+}
+
+.queue navigation button svg {
+	height: 25px;
+}
+
+.queue ul li button svg {
+	height: 1.5em;
+	fill: var(--theme-color-md);
+	transform: rotate(45deg);
 }

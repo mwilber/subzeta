@@ -1,6 +1,6 @@
 .panel {
 	display: none;
-	border: solid #ccc 1px;
+	border: none;
 	overflow-x: hidden;
 	overflow-y: auto;
 }
@@ -13,5 +13,4 @@
 
 .active {
 	display: block;
-	border: solid red 2px;
 }

@@ -4,15 +4,10 @@
 @import url(_navigation.css);
 @import url(_mediaplayer.css);
 
-
-  /* @media (max-width: var(--phone)) {
-
-  }
-  
-  @media (min-width: var(--phone)) and (max-width: var(--tablet)) {
-
-  }
-  
-  @media (min-width: var(--desktop)) {
-
-  } */
+:root {
+  --theme-bg: #ffffff;
+  --theme-fg: #000000;
+	--theme-color-lt: #f4f4f9;
+  --theme-color-md: #929299;
+  --theme-color-dk: #292933;
+}

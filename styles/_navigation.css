@@ -5,4 +5,25 @@ navigation {
 
 navigation button {
 	flex: 1;
+	background: var(--theme-color-lt);
+	fill: var(--theme-color-dk);
+	border: solid 1px var(--theme-color-md);
+	border-radius: none;
+
+	border-top-color: var(--theme-color-lt);
+	border-left-color: var(--theme-color-lt);
+	border-bottom-color: var(--theme-color-dk);
+
+}
+
+navigation button[disabled] {
+	background: var(--theme-color-md);
+	fill: var(--theme-color-lt);
+
+	border-top-color: var(--theme-color-dk);
+	border-left-color: var(--theme-color-dk);
+}
+
+navigation button svg {
+	height: 70%;
 }

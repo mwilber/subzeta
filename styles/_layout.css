@@ -4,6 +4,8 @@ body {
 	height:100%;
 	/* overflow: hidden; */
 	font-family: 'Roboto', sans-serif;
+	background: var(--theme-bg);
+	color: var(--theme-color-dk);
 }
 
 header {

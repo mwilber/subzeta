@@ -21,7 +21,7 @@ self.addEventListener('install', function(event){
 			cache.addAll([
 				'/',
 				'/index.html',
-				'/app-shell.css'
+				'/main.css'
 			]);
 		}));
 });
@@ -95,8 +95,10 @@ self.addEventListener('fetch', function(event){
 					return caches.open(CACHE_DYNAMIC_NAME)
 						.then(function(cache) {
 							//console.log("[SW] cache put", event.request.url)
-							if(!event.request.url.startsWith("chrome-extension://"))
-								cache.put(event.request.url, res.clone());
+							// Temporarily disabling the cache
+							// TODO: reenable after development
+							// if(!event.request.url.startsWith("chrome-extension://"))
+							// 	cache.put(event.request.url, res.clone());
 							return res;
 						});
 				})

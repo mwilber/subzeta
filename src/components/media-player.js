@@ -17,7 +17,7 @@ export default (audioApi, queueController) =>
 						<path d="M250.28,56.47c0-5.4-5.85-8.78-10.53-6.08L86.21,139.03c1.11-42.16,8.67-83.43,22.57-122.92c1.01-2.88-0.44-6.03-3.3-7.08L82.33,0.53c-2.9-1.07-6.14,0.43-7.17,3.34C58.64,50.66,50.27,99.74,50.27,149.84c0,50.35,8.45,99.66,25.13,146.66c1.03,2.91,4.27,4.4,7.17,3.33l23.14-8.55c2.86-1.06,4.31-4.21,3.29-7.09c-13.97-39.47-21.6-80.73-22.77-122.88l153.52,88.63c4.68,2.7,10.53-0.68,10.53-6.08c0,0-10.53-34.09-10.53-94.75S250.28,56.47,250.28,56.47z"/>
 					</svg>
 				</button>
-				<button id="media-button-reverse" @click="${() => audioApi.Jump(10, true)}" class="fs-only">Reverse</button>
+				<button id="media-button-reverse" @click="${() => audioApi.Jump(10, true)}">Reverse</button>
 				<div class="progress-container">
 					<div class="progress-bar">
 						<svg viewBox="0 0 36 36" class="circular-chart">
@@ -68,7 +68,7 @@ export default (audioApi, queueController) =>
 						</svg>
 					</button>
 				</div>
-				<button id="media-button-forward" @click="${() => audioApi.Jump(10, false)}" class="fs-only">Forward</button>
+				<button id="media-button-forward" @click="${() => audioApi.Jump(10, false)}">Forward</button>
 				<button id="media-button-next" @click="${() => queueController.PlayNext()}">
 					<svg
 						version="1.1"

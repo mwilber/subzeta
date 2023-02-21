@@ -81,16 +81,16 @@
 
 .media-player .media-display .button-search {
 	border: none;
-    float: right;
-    margin: 0.25em 0.25em -0.5em 0;
-    height: 2em;
-    width: 2em;
+    height: 1em;
+    margin-right: -2.5em;
+    margin-left: 0.5em;
 }
 
 .media-player .media-display .button-search svg {
 	display: inline-block;
 	width: 100%;
 	height: 100%;
+	transform: scale(1.5);
 }
 
 .media-player .media-display #display-title {

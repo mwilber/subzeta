@@ -150,20 +150,7 @@ html`
 		</div>
 
 		<div class="media-player">
-			<button class="button-fullscreen" @click="${() => state.fullscreen = !state.fullscreen}">
-				<!--<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-				viewBox="0 0 100 25" style="enable-background:new 0 0 100 25;" xml:space="preserve">
-					<g>
-						<line x1="0" y1="6.25" x2="100" y2="6.25"/>
-					</g>
-					<g>
-						<line x1="0" y1="12.5" x2="100" y2="12.5"/>
-					</g>
-					<g>
-						<line x1="0" y1="18.75" x2="100" y2="18.75"/>
-					</g>
-				</svg>-->
-			</button>
+			<button class="button-fullscreen" @click="${() => state.fullscreen = !state.fullscreen}"></button>
 			<div class="media-art">
 				${() => mediaArt(state.mediadisplay)}
 			</div>

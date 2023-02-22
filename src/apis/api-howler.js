@@ -1,9 +1,13 @@
+import NoSleep from '../vendor/nosleep/index.js';
+
 export class ApiHowler {
 	constructor(state, mediaSession) {
 		this.state = state;
 		this.mediaSession = mediaSession;
 		this.meta = null;
 		this.onEnd = null;
+
+		this.noSleep = new NoSleep();
 	}
 
 	_formatTime(secs) {
@@ -43,7 +47,7 @@ export class ApiHowler {
 				// Set the media volume to match the UI
 				this.Volume( this.state.volume || 1 );
 				// Enable wake lock
-				//this.noSleep.enable();
+				this.noSleep.enable();
 				// Display the duration.
 				this.state.mediadisplay.duration = this._formatTime(Math.round(this.howl.duration()));
 				// Update the media session api
@@ -54,21 +58,21 @@ export class ApiHowler {
 			},
 			onpause: ()=>{
 				// Disable wake lock
-				//this.noSleep.disable();
+				this.noSleep.disable();
 				// Update the media session api
 				this.mediaSession.SetState(2);
 				this.state.playing = false;
 			},
 			onstop: ()=>{
 				// Disable wake lock
-				//this.noSleep.disable();
+				this.noSleep.disable();
 				// Update the media session api
 				this.mediaSession.SetState(0);
 				this.state.playing = false;
 			},
 			onend: ()=>{
 				// Disable wake lock
-				//this.noSleep.disable();
+				this.noSleep.disable();
 				// Update the media session api
 				this.mediaSession.SetState(0);
 				this.state.playing = false;

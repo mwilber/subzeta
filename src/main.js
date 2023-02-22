@@ -225,3 +225,10 @@ window.HandleImg = function (el) {
 window.BlackOrWhite = function (red, green, blue) {
 	return ((red*0.299 + green*0.587 + blue*0.114) > 160) ? "black" : "white";
 }
+
+// Enable auto search for development
+// TODO: Remove this
+const searchQuery = document.getElementById('search-query');
+if(searchQuery) searchQuery.value = 'Pearl Jam';
+const searchSubmit = document.getElementById('search-submit');
+if(searchSubmit) searchSubmit.click();

@@ -1,7 +1,7 @@
 .media-player {
 	display: grid;
 	grid-template-columns: 25px 1fr;
-	grid-template-rows: 1fr 1fr;
+    grid-template-rows: 1fr;
 	height: 100%;
 	background: #999;
 }
@@ -70,6 +70,7 @@
 	flex:2;
 	overflow: auto;
 	text-align: center;
+	align-self: center;
 }
 
 .media-player .media-display #display-artwork {
@@ -336,6 +337,10 @@
 		grid-template-rows: 25px 1fr;
 	}
 
+	.fullscreen .media-player {
+		grid-template-rows: 25px 1fr 1fr;
+	}
+
 	.media-player .button-fullscreen {
 		grid-row: initial;
 	}
@@ -345,7 +350,7 @@
 @media (min-width: 700px) {
 
 	.media-player .media-interface {
-		grid-template-rows: 1fr 30px 2fr;
+		grid-template-rows: 1fr 30px 1fr;
 	}
 }
 
@@ -357,6 +362,10 @@
 }
 
 @media (min-width: 700px) and (min-height: 550px) {
+
+	.media-player {
+		grid-template-rows: calc(33vw - 25px) 1fr;
+	}
 
 	.media-player .media-art {
 		display: initial;

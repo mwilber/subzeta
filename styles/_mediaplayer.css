@@ -310,7 +310,7 @@
 
 @media (min-height: 350px) {
 	.fullscreen .media-player .media-interface {
-		grid-template-rows: 1fr 30px 2fr;
+		grid-template-rows: 1fr 30px 1fr;
 	}
 	
 	.fullscreen .media-player .media-display{

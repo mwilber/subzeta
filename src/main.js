@@ -228,7 +228,7 @@ window.BlackOrWhite = function (red, green, blue) {
 
 // Enable auto search for development
 // TODO: Remove this
-const searchQuery = document.getElementById('search-query');
-if(searchQuery) searchQuery.value = 'Pearl Jam';
-const searchSubmit = document.getElementById('search-submit');
-if(searchSubmit) searchSubmit.click();
+// const searchQuery = document.getElementById('search-query');
+// if(searchQuery) searchQuery.value = 'Pearl Jam';
+// const searchSubmit = document.getElementById('search-submit');
+// if(searchSubmit) searchSubmit.click();

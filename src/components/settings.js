@@ -13,8 +13,8 @@ export default (state) => html`
 	}}">
 		<input id="login-server" type="text" placeholder="Server" value="${state.settings.server}" />
 		<input id="login-user" type="text" placeholder="Username" value="${state.settings.user}" />
-		<input id="login-password" type="text" placeholder="Password" value="${state.settings.pass}" />
+		<input id="login-password" type="password" placeholder="Password" value="${state.settings.pass}" />
 		<input type="submit" class="search" value="Save" />
 	</form>
-	<button @click="${() => window.swUpdate()}">Update SW</button>
+	<button class="update-sw" @click="${() => window.swUpdate()}">Update SW</button>
 `

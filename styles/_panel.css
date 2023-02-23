@@ -89,3 +89,45 @@ ul li button span {
 	fill: var(--theme-color-md);
 	transform: rotate(45deg);
 }
+
+.settings.active {
+	display: flex;
+    flex-direction: column;
+}
+
+.settings h2 {
+	text-align: center;
+	margin-top: 1em;
+}
+
+.settings form {
+	display: grid;
+    grid-template-columns: 1fr;
+    grid-auto-rows: 1fr;
+    grid-gap: 1em 0em;
+    width: 80%;
+    margin: 1em auto;
+}
+
+.settings form input {
+	padding: 1em 1.5em;
+}
+
+.settings form input[type="submit"] {
+	background: var(--accent-color-md);
+	color: var(--theme-color-lt);
+	text-transform: uppercase;
+	border: solid 1px var(--theme-color-md);
+	border-radius: 0;
+}
+
+.settings .update-sw {
+	width: 80%;
+	margin: auto;
+	padding: 1em 1.5em;
+	background: #732626;
+	color: var(--theme-color-lt);
+	text-transform: uppercase;
+	border: solid 1px var(--theme-color-md);
+	border-radius: 0;
+}

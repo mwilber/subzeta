@@ -53,8 +53,8 @@ export default (results, controller, queue, loadAlbum, loadArtist) => html`
 	${() => {
 		if(results.songs && results.songs.length)
 			return html`
-			<h2>Songs</h2>
-				<button @click="${() => queue.LoadData(results, true)}">Play All</button>
+			<h2 class="song-group"><span>Songs</span> <button @click="${() => queue.LoadData(results, true)}">Play All</button></h2>
+				
 				<ul>
 					${() => results.songs.map((song) => {
 						return html`

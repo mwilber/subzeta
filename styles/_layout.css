@@ -33,7 +33,7 @@ ul li button {
 	padding: 1em 1.5em;
 	background: var(--theme-bg);
 	border: none;
-	border-bottom: solid 1px var(--theme-color-lt);
+	border-bottom: solid 1px var(--accent-color-lt);
 	text-align: left;
 }
 

@@ -17,7 +17,7 @@ navigation button {
 }
 
 navigation button[disabled] {
-	background: var(--theme-color-md);
+	background: var(--accent-color-md);
 	fill: var(--theme-color-lt);
 
 	border-top-color: var(--theme-color-dk);
@@ -25,5 +25,5 @@ navigation button[disabled] {
 }
 
 navigation button svg {
-	height: 70%;
+	height: 50%;
 }

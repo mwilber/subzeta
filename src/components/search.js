@@ -1,6 +1,6 @@
 import { html } from '../vendor/@arrow-js/core/index.min.mjs';
 
-const RenderResults = (results) => {
+const RenderResults = (results, queue, loadAlbum, loadArtist) => {
 	let resultsOutput = [];
 
 	if(results.artists && results.artists.length)
@@ -80,5 +80,5 @@ export default (results, controller, queue, loadAlbum, loadArtist) => html`
 		<input id="search-query" type="text" name="query" placeholder="Search" value="" />
 		<input id="search-submit" type="submit" class="search" value="Go" />
 	</form>
-	${()=> RenderResults(results)}
+	${()=> RenderResults(results, queue, loadAlbum, loadArtist)}
 `;

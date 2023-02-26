@@ -15,7 +15,6 @@ export default (data, queue) => {;
 					data-albumid="${song.albumId}"
 					data-image="${song.coverArt[0]}"
 				>
-					<!--<img src="${song.coverArt[0].src}" width="25"/>-->
 					${song.title}
 					<span>${song.cached ? pin : ''}</span>
 				</button>

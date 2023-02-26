@@ -149,7 +149,6 @@ export class ApiSubsonic{
 			.then(response => response.json())
 			.then(
 				(data)=>{
-                console.log("🚀 ~ file: api-subsonic.js ~ data", data)
 					if( !data['subsonic-response'] || data['subsonic-response'].status !== 'ok' ) return;
 					const {searchResult2} = data['subsonic-response'];
 					let searchResultObj = {
@@ -158,7 +157,7 @@ export class ApiSubsonic{
 						songs: []
 					}
 					// Format Songs
-					if(searchResult2.songs && searchResult2.songs.length)
+					if(searchResult2.song && searchResult2.song.length)
 						searchResult2.song.forEach((song)=>{
 							searchResultObj.songs.push(this.FormatSongObject(song))
 						});

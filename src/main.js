@@ -196,36 +196,6 @@ html`
 
 window.state = state;
 
-window.HandleImg = function (el) {
-	//console.log("*** image loaded", el);
-	const mediaPlayerEl = document.querySelector('.media-player');
-	const mediaInterfaceEl = document.querySelector('.media-interface');
-	const progressRouteEl = document.querySelector('.progress-bar svg path.route');
-	const progressCircleEl = document.querySelector('.progress-bar svg path.circle');
-	const fullScreenEl = document.querySelector('.media-player .button-fullscreen');
-	if (!el || !mediaPlayerEl || !ColorThief) return;
-	const colorThief = new ColorThief();
-	const color = colorThief.getColor(el);
-	const kVal = BlackOrWhite(color[0], color[1], color[2]);
-	//console.log("color", color);
-	mediaPlayerEl.style.backgroundColor = `rgb(${color[0]},${color[1]},${color[2]})`;
-	mediaInterfaceEl.style.color = kVal;
-	mediaInterfaceEl.style.fill = kVal;
-	progressRouteEl.style.stroke = kVal;
-	progressCircleEl.style.stroke = kVal;
-
-	fullScreenEl.style.backgroundColor = kVal === 'black' ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.15)';
-	fullScreenEl.style.stroke = `rgb(${color[0]},${color[1]},${color[2]})`;
-	fullScreenEl.style.stroke = kVal;
-
-		// .then(color => { console.log(color) })
-		// .catch(err => { console.log(err) });
-}
-
-window.BlackOrWhite = function (red, green, blue) {
-	return ((red*0.299 + green*0.587 + blue*0.114) > 160) ? "black" : "white";
-}
-
 // Enable auto search for development
 // TODO: Remove this
 // const searchQuery = document.getElementById('search-query');

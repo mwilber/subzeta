@@ -3,7 +3,7 @@
 	grid-template-columns: 25px 1fr;
     grid-template-rows: 1fr;
 	height: 100%;
-	background: #999;
+	background: var(--player-color-bg);
 }
 
 .media-player button {
@@ -41,6 +41,8 @@
 	display: grid;
 	grid-template-columns: 1fr;
 	grid-template-rows: 30px 2fr;
+	color: var(--player-color-fg);
+	fill: var(--player-color-fg);
 }
 
 .fullscreen .media-player .media-interface {

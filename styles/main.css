@@ -5,6 +5,9 @@
 @import url(_mediaplayer.css);
 
 :root {
+  --player-color-bg: #999;
+  --player-color-fg: #000;
+
   --theme-bg: #ffffff;
   --theme-fg: #000000;
 	--theme-color-lt: #f4f4f9;

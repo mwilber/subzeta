@@ -1,27 +1,26 @@
 import { html } from '../vendor/@arrow-js/core/index.min.mjs';
 
-export default (results, controller, queue, loadAlbum, loadArtist) => {
-
+const RenderResults = (results) => {
 	let resultsOutput = [];
 
 	if(results.artists && results.artists.length)
-		resultsOutput.push(html`
-			<h2>Artists</h2>
-			<ul>
-				${() => results.artists.map((artist) => {
-					return html`
-						<li>
-							<button 
-								@click="${() => loadArtist(artist.id)}"
-								data-id="${artist.id}"
-								data-name="${artist.name}"
-							>
-								${artist.name}
-							</button>
-						</li>
-					`.key(artist.id);
-				})}
-			</ul>`);
+	resultsOutput.push(html`
+		<h2>Artists</h2>
+		<ul>
+			${() => results.artists.map((artist) => {
+				return html`
+					<li>
+						<button 
+							@click="${() => loadArtist(artist.id)}"
+							data-id="${artist.id}"
+							data-name="${artist.name}"
+						>
+							${artist.name}
+						</button>
+					</li>
+				`.key(artist.id);
+			})}
+		</ul>`);
 
 	if(results.albums && results.albums.length)
 		resultsOutput.push(html`
@@ -69,15 +68,17 @@ export default (results, controller, queue, loadAlbum, loadArtist) => {
 				})}
 			</ul>`);
 
-	if(!resultsOutput.length) resultsOutput.push(`
+	if(!resultsOutput.length) resultsOutput.push(html`
 		<ul><li><button disabled>No results found.</button></li></ul>
 	`);
 
-	return html`
-		<form id="search-form" @submit="${controller.Search.bind(controller)}">
-			<input id="search-query" type="text" name="query" placeholder="Search" value="" />
-			<input id="search-submit" type="submit" class="search" value="Go" />
-		</form>
-		${resultsOutput}
-	`;
-} 
+	return resultsOutput;
+};
+
+export default (results, controller, queue, loadAlbum, loadArtist) => html`
+	<form id="search-form" @submit="${controller.Search.bind(controller)}">
+		<input id="search-query" type="text" name="query" placeholder="Search" value="" />
+		<input id="search-submit" type="submit" class="search" value="Go" />
+	</form>
+	${()=> RenderResults(results)}
+`;

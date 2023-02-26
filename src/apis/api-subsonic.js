@@ -149,23 +149,25 @@ export class ApiSubsonic{
 			.then(response => response.json())
 			.then(
 				(data)=>{
-                //console.log("🚀 ~ file: api-subsonic.js ~ line 63 ~ ApiSubsonic ~ GetAlbum ~ data", data)
+                console.log("🚀 ~ file: api-subsonic.js ~ data", data)
 					if( !data['subsonic-response'] || data['subsonic-response'].status !== 'ok' ) return;
+					const {searchResult2} = data['subsonic-response'];
 					let searchResultObj = {
 						albums: [],
 						artists: [],
 						songs: []
 					}
 					// Format Songs
-					data['subsonic-response'].searchResult2.song.forEach((song)=>{
-						searchResultObj.songs.push(this.FormatSongObject(song))
-					});
+					if(searchResult2.songs && searchResult2.songs.length)
+						searchResult2.song.forEach((song)=>{
+							searchResultObj.songs.push(this.FormatSongObject(song))
+						});
 					// Add Albums
-					if(data['subsonic-response'].searchResult2.album)
-						searchResultObj.albums = data['subsonic-response'].searchResult2.album.slice();
-					// TODO: Add artists
-					if(data['subsonic-response'].searchResult2.artist)
-						searchResultObj.artists = data['subsonic-response'].searchResult2.artist.slice();
+					if(searchResult2.album)
+						searchResultObj.albums = searchResult2.album.slice();
+					// Add artists
+					if(searchResult2.artist)
+						searchResultObj.artists = searchResult2.artist.slice();
 					return searchResultObj;
 				}
 			);

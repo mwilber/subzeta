@@ -198,7 +198,8 @@ window.state = state;
 
 // Enable auto search for development
 // TODO: Remove this
-// const searchQuery = document.getElementById('search-query');
-// if(searchQuery) searchQuery.value = 'Pearl Jam';
-// const searchSubmit = document.getElementById('search-submit');
-// if(searchSubmit) searchSubmit.click();
+const searchQuery = document.getElementById('search-query');
+if(searchQuery) searchQuery.value = 'Pearl Jam';
+if(searchQuery) searchQuery.value = 'nine inch nails';
+const searchSubmit = document.getElementById('search-submit');
+if(searchSubmit) searchSubmit.click();

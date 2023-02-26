@@ -96,12 +96,20 @@
 	transform: scale(1.5);
 }
 
+.media-player .media-display #display-title,
+.media-player .media-display #display-album,
+.media-player .media-display #display-artist {
+	overflow: hidden;
+}
+
 .media-player .media-display #display-title {
 	clear:right;
 }
 
 .media-player .media-display button {
 	border-bottom: 1px dotted;
+	text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .media-player .media-time {
@@ -266,7 +274,7 @@
 	display: initial;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 900px) {
 	.fullscreen .media-player #media-button-reverse,
 	.fullscreen .media-player #media-button-forward {
 		display: initial;

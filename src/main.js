@@ -51,9 +51,9 @@ let defaultState = {
 	fullscreen: false,
 	playing: false,
 	settings: {
-		server: "",
-		user: "",
-		pass: ""
+		server: "https://ampache.greenzeta.com",
+		user: "subzeta",
+		pass: "gzdemo"
 	}
 };
 // Retrieve the state from localStorage, if available.

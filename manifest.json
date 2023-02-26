@@ -1,9 +1,15 @@
 {
-	"name": "Subsonic Player PWA",
-	"short_name": "Subsonic Player",
+	"name": "SubZeta: Subsonic Player",
+	"short_name": "SubZeta",
+	"categories": ["music", "entertainment"],
+	"description": "Music player compatible with Subsonic servers.",
 	"theme_color": "#7bb951",
 	"background_color": "#111313",
 	"display": "standalone",
+	"launch_handler": {
+		"client_mode": ["focus-existing, auto"]
+	},
+	"orientation": "any",
 	"Scope": "/",
 	"start_url": "/",
 	"icons": [

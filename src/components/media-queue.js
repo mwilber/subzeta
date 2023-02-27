@@ -1,7 +1,7 @@
 import { html } from '../vendor/@arrow-js/core/index.min.mjs';
 import {pin, cache, shuffle} from '../icons.js';
 
-export default (data, queue) => {;
+const RenderListing = (data, queue) => {
 	let songs = `
 		<li><button disabled>No songs in queue.</button></li>
 	`;
@@ -21,6 +21,12 @@ export default (data, queue) => {;
 			</li>
 		`.key(song.id));
 
+	return songs;
+}
+
+export default (data, queue) => {;
+
+
 	return html`
 		<navigation>
 			<button @click="${() => queue.CacheAll()}">
@@ -31,7 +37,7 @@ export default (data, queue) => {;
 			</button>
 		</navigation>
 		<ul>
-			${songs}
+			${() => RenderListing(data, queue)}
 		</ul>
 	`;
 }

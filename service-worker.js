@@ -69,7 +69,8 @@ self.addEventListener('fetch', function(event){
 										cache.keys().then(function(keys) {
 											clients.get(event.clientId).then((client)=>{
 												client.postMessage({
-													msg: "File cached",
+													type: 'cached',
+													msg: 'File cached',
 													count: keys.length,
 													url: event.request.url
 												});

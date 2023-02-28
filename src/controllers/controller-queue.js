@@ -7,6 +7,39 @@ export class ControllerQueue {
 		this.audioApi = audioApi;
 		this.mediaCache = mediaCache;
 
+		navigator.serviceWorker.addEventListener("message", (event) => {
+			console.log(event.data);
+
+			// this._getCacheData(state.mediaqueue.songs).then(cacheData => {
+			// 	this.state.mediaqueue = {...data, songs: cacheData};
+			// });
+
+			let tempQueue = {...state.mediaqueue, songs: []};
+			state.mediaqueue.songs.forEach((song) => {
+				console.log("comparing", song.src[0], event.data.url, (song.src[0] === event.data.url))
+				tempQueue.songs.push({...song, cached:(song.src[0] === event.data.url || song.cached)});
+			});
+
+			
+			console.log("tempQueue", tempQueue);
+
+			this.state.mediaqueue = tempQueue;
+
+			// for (let idx=0; idx < state.mediaqueue.songs.length; idx++) {
+			// 	console.log("checking for", state.mediaqueue.songs[idx], idx)
+			// 	if (state.mediaqueue.songs[idx].src[0] === event.data.url) {
+			// 		console.log("found", event.data.url)
+			// 		state.mediaqueue.songs[idx].cached = true;
+			// 	}
+			// }
+			// let theOne = state.mediaqueue.songs.find((song) => {
+			// 	return song.src[0] === event.data.url;
+			// });
+
+			// console.log("Zathrus found the one", theOne);
+			// if (theOne) theOne.cached = true;
+		});
+
 		// TODO: tie this into a user setting
 		this.audioApi.onEnd = this.PlayNext.bind(this);
 	}

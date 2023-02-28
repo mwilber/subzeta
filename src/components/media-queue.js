@@ -2,6 +2,7 @@ import { html } from '../vendor/@arrow-js/core/index.min.mjs';
 import {pin, cache, shuffle} from '../icons.js';
 
 const RenderListing = (data, queue) => {
+	console.log("!!!! rendering listing !!!!!!!!", data.songs)
 	let songs = `
 		<li><button disabled>No songs in queue.</button></li>
 	`;
@@ -16,7 +17,7 @@ const RenderListing = (data, queue) => {
 					data-image="${song.coverArt[0]}"
 				>
 					${song.title}
-					<span>${song.cached ? pin : ''}</span>
+					<span>${song.cached ? pin : 'nope'}</span>
 				</button>
 			</li>
 		`.key(song.id));
@@ -37,6 +38,7 @@ export default (data, queue) => {;
 			</button>
 		</navigation>
 		<ul>
+			${Math.random()}
 			${() => RenderListing(data, queue)}
 		</ul>
 	`;

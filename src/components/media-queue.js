@@ -2,6 +2,9 @@ import { html } from '../vendor/@arrow-js/core/index.min.mjs';
 import {pin, cache, shuffle, spinner} from '../icons.js';
 
 const GetIcon = (status) => {
+	// TODO: Investigate this further.
+	// ArrowJS doesn't appear to detect a change in the html when only the svg is swapped out.
+	// Adding the changed attribute to the span wrapper fixes it.
 	switch(status) {
 		case 1:
 			return html`<span data-status="1">${pin}</span>`;

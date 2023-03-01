@@ -9,10 +9,8 @@ export class ControllerQueue {
 
 		// Listen for messages on the fetch/cache status from the ServiceWorker
 		navigator.serviceWorker.addEventListener("message", (event) => {
-			console.log(event.data);
 			const { type: eventType } = event.data;
 			if (eventType !== 'fetching' & eventType !== 'cached') return;
-
 
 			let tempQueue = JSON.parse(JSON.stringify(state.mediaqueue));
 			tempQueue.songs.forEach((song) => {
@@ -20,29 +18,8 @@ export class ControllerQueue {
 					song.cached = eventType === 'fetching' ? -1 : 1;
 				}
 			});
-			// state.mediaqueue.songs.forEach((song) => {
-			// 	console.log("comparing", song.src[0], event.data.url, (song.src[0] === event.data.url))
-			// 	tempQueue.songs.push({...song, cached:(song.src[0] === event.data.url || song.cached)});
-			// });
-
-			
-			console.log("tempQueue", tempQueue);
 
 			this.state.mediaqueue = tempQueue;
-
-			// for (let idx=0; idx < state.mediaqueue.songs.length; idx++) {
-			// 	console.log("checking for", state.mediaqueue.songs[idx], idx)
-			// 	if (state.mediaqueue.songs[idx].src[0] === event.data.url) {
-			// 		console.log("found", event.data.url)
-			// 		state.mediaqueue.songs[idx].cached = true;
-			// 	}
-			// }
-			// let theOne = state.mediaqueue.songs.find((song) => {
-			// 	return song.src[0] === event.data.url;
-			// });
-
-			// console.log("Zathrus found the one", theOne);
-			// if (theOne) theOne.cached = true;
 		});
 
 		// TODO: tie this into a user setting

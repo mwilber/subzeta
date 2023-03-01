@@ -18,6 +18,7 @@ self.addEventListener('install', function(event){
 	event.waitUntil(caches.open(CACHE_STATIC_NAME)
 		.then(function(cache){
 			console.log('[SW] precaching');
+			// TODO: Fix error thrown on addAll
 			cache.addAll([
 				'/',
 				'/index.html',
@@ -46,6 +47,7 @@ self.addEventListener('activate', function(event){
 });
 
 self.addEventListener('fetch', function(event){
+	console.log("[SW] Heard fetch", event.request.url);
 	if( cacheFirst.some(v => event.request.url.includes(v)) ){
 		// Images and audio are always cache first
 		console.log('[SW] Cache First URL', event.request.url);
@@ -57,6 +59,13 @@ self.addEventListener('fetch', function(event){
 						return response;
 					}else{
 						console.log('[SW] Punting to network...', event.request);
+						clients.get(event.clientId).then((client)=>{
+							client.postMessage({
+								type: 'fetching',
+								msg: 'Fetching File',
+								url: event.request.url
+							});
+						});
 						return fetch(event.request.url).then((res)=>{
 							if( !res || !res.body ){
 								console.log('[SW] Network request failed. Returning undefined.');
@@ -70,7 +79,7 @@ self.addEventListener('fetch', function(event){
 											clients.get(event.clientId).then((client)=>{
 												client.postMessage({
 													type: 'cached',
-													msg: 'File cached',
+													msg: 'Cached File',
 													count: keys.length,
 													url: event.request.url
 												});

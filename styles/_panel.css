@@ -86,7 +86,9 @@ ul li button span {
 
 .queue ul li button svg {
 	height: 1.5em;
+	width: 1.5em;
 	fill: var(--theme-color-md);
+	stroke: var(--theme-color-md);
 	transform: rotate(45deg);
 }
 

@@ -21,9 +21,9 @@ export class ControllerCache{
 		let cache = await caches.open(this.mediaCacheName);
 		let match = await cache.match(url);
 		if(match && match.body){
-			return true;
+			return 1;
 		}else{
-			return false;
+			return 0;
 		}
 	}
 

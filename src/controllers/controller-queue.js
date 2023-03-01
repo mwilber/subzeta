@@ -7,18 +7,23 @@ export class ControllerQueue {
 		this.audioApi = audioApi;
 		this.mediaCache = mediaCache;
 
+		// Listen for messages on the fetch/cache status from the ServiceWorker
 		navigator.serviceWorker.addEventListener("message", (event) => {
 			console.log(event.data);
+			const { type: eventType } = event.data;
+			if (eventType !== 'fetching' & eventType !== 'cached') return;
 
-			// this._getCacheData(state.mediaqueue.songs).then(cacheData => {
-			// 	this.state.mediaqueue = {...data, songs: cacheData};
-			// });
 
-			let tempQueue = {...state.mediaqueue, songs: []};
-			state.mediaqueue.songs.forEach((song) => {
-				console.log("comparing", song.src[0], event.data.url, (song.src[0] === event.data.url))
-				tempQueue.songs.push({...song, cached:(song.src[0] === event.data.url || song.cached)});
+			let tempQueue = JSON.parse(JSON.stringify(state.mediaqueue));
+			tempQueue.songs.forEach((song) => {
+				if (song.src[0] === event.data.url) {
+					song.cached = eventType === 'fetching' ? -1 : 1;
+				}
 			});
+			// state.mediaqueue.songs.forEach((song) => {
+			// 	console.log("comparing", song.src[0], event.data.url, (song.src[0] === event.data.url))
+			// 	tempQueue.songs.push({...song, cached:(song.src[0] === event.data.url || song.cached)});
+			// });
 
 			
 			console.log("tempQueue", tempQueue);
@@ -65,6 +70,7 @@ export class ControllerQueue {
 	LoadData (data, autoplay){
 		if(!data || !data.songs) return;
 		this._getCacheData(data.songs).then(cacheData => {
+			console.log('cacheData', cacheData);
 			this.state.mediaqueue = {...data, songs: cacheData};
 			this.state.mediaselection = 0;
 			console.log("Queue Data Loaded", this.state.mediaqueue);

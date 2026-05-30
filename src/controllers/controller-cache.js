@@ -19,7 +19,7 @@ export class ControllerCache{
 	async IsCached(url){
 		if(!url) return null;
 		let cache = await caches.open(this.mediaCacheName);
-		let match = await cache.match(url);
+		let match = await cache.match(url, {ignoreVary: true});
 		if(match && match.body){
 			return 1;
 		}else{
@@ -41,7 +41,7 @@ export class ControllerCache{
 
 	CacheNextPath(){
 		if(!this.paths){
-			navigator.serviceWorker.controller.postMessage({
+			navigator.serviceWorker.controller?.postMessage({
 				action: 'cache-status'
 			});
 		};
@@ -52,11 +52,12 @@ export class ControllerCache{
 		if(!url) return;
 		let cache = await caches.open(this.mediaCacheName);
 		// Check for existing cache
-		let match = await cache.match(url);
+		let match = await cache.match(url, {ignoreVary: true});
 		if(!match || !match.body){
 			// Fetch a new item. This will be cached automatically by the service worker
 			try{
-				let response = await fetch(url);
+				await navigator.serviceWorker.ready;
+				await fetch(url);
 			}catch(e){
 				console.log('error fetching', e);
 			}

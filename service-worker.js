@@ -6,25 +6,138 @@
  * to build out your own caching strategy and other PWA features.
  */
 
-let CACHE_VERSION = '0.21';
-let MEDIA_CACHE_VERSION = '0.12';
+let CACHE_VERSION = '0.23';
+let MEDIA_CACHE_VERSION = '0.14';
 let CACHE_STATIC_NAME = 'static_v'+CACHE_VERSION;
 let CACHE_DYNAMIC_NAME = 'dynamic_v'+CACHE_VERSION;
 let CACHE_MEDIA_NAME = 'media_v'+MEDIA_CACHE_VERSION;
 let cacheFirst = ['getCoverArt.view', 'download.view'];
+let precacheUrls = [
+	'/',
+	'/index.html',
+	'/styles/main.css'
+];
+
+const isCacheableRequest = (request) => request.method === 'GET' && request.url.startsWith('http');
+const isCacheableResponse = (response) => response && (response.ok || response.type === 'opaque');
+
+async function PutInCache(cacheName, request, response){
+	if(!isCacheableRequest(request) || !isCacheableResponse(response)) return;
+
+	const cache = await caches.open(cacheName);
+	try {
+		await cache.put(request, response.clone());
+	} catch (err) {
+		console.log('[SW] Cache put failed.', err);
+	}
+}
+
+async function PostClient(clientId, message){
+	if(!clientId) return;
+	const client = await clients.get(clientId);
+	if(!client) return;
+	client.postMessage(message);
+}
+
+function GetRangePosition(rangeHeader, contentLength){
+	const match = /^bytes=(\d*)-(\d*)$/i.exec(rangeHeader || '');
+	if(!match) return;
+
+	let start = match[1] === '' ? undefined : Number(match[1]);
+	let end = match[2] === '' ? undefined : Number(match[2]);
+	if(start === undefined && end === undefined) return;
+
+	if(start === undefined){
+		start = Math.max(contentLength - end, 0);
+		end = contentLength - 1;
+	}else{
+		end = end === undefined ? contentLength - 1 : Math.min(end, contentLength - 1);
+	}
+
+	if(Number.isNaN(start) || Number.isNaN(end) || start < 0 || end < start || start >= contentLength) return;
+	return {start, end};
+}
+
+async function RangeResponse(request, response){
+	try {
+		const buffer = await response.arrayBuffer();
+		const range = GetRangePosition(request.headers.get('range'), buffer.byteLength);
+		if(!range) return response;
+
+		const chunk = buffer.slice(range.start, range.end + 1);
+		const headers = new Headers(response.headers);
+		headers.set('content-length', String(chunk.byteLength));
+		headers.set('content-range', `bytes ${range.start}-${range.end}/${buffer.byteLength}`);
+		headers.set('accept-ranges', 'bytes');
+
+		return new Response(chunk, {
+			status: 206,
+			statusText: 'Partial Content',
+			headers
+		});
+	} catch (err) {
+		console.log('[SW] Cached range response failed.', err);
+		return response;
+	}
+}
+
+async function MediaCacheFirst(request){
+	const cachedResponse = await caches.match(request, {ignoreVary: true});
+	if(cachedResponse && cachedResponse.body){
+		console.log('[SW] Responding with media cache');
+		if(request.headers.has('range')){
+			return RangeResponse(request, cachedResponse);
+		}
+		return cachedResponse;
+	}
+
+	console.log('[SW] Punting media to network...', request);
+	if(request.headers.has('range')){
+		const fullResponse = await fetch(request.url);
+		if(fullResponse.status === 200){
+			await PutInCache(CACHE_MEDIA_NAME, new Request(request.url), fullResponse);
+			return RangeResponse(request, fullResponse.clone());
+		}
+		return fetch(request);
+	}
+
+	const response = await fetch(request);
+	await PutInCache(CACHE_MEDIA_NAME, request, response);
+	return response;
+}
+
+async function NetworkFirst(request, cacheName){
+	try {
+		const response = await fetch(request);
+		await PutInCache(cacheName, request, response);
+		return response;
+	} catch (err) {
+		console.log('[SW] Network failed. Attempting cache.', err);
+		const cachedResponse = await caches.match(request, {ignoreVary: true});
+		if(cachedResponse) return cachedResponse;
+		throw err;
+	}
+}
 
 self.addEventListener('install', function(event){
 	console.log('[SW] installing...');
-	event.waitUntil(caches.open(CACHE_STATIC_NAME)
-		.then(function(cache){
-			console.log('[SW] precaching');
-			// TODO: Fix error thrown on addAll
-			cache.addAll([
-				'/',
-				'/index.html',
-				'/main.css'
-			]);
-		}));
+	event.waitUntil(
+		caches.open(CACHE_STATIC_NAME)
+			.then(function(cache){
+				console.log('[SW] precaching');
+				return Promise.all(precacheUrls.map(function(url){
+					return fetch(url)
+						.then(function(response){
+							if(!isCacheableResponse(response)) return;
+							return cache.put(url, response);
+						})
+						.catch(function(err){
+							console.log('[SW] Precache failed.', url, err);
+						});
+				}));
+			})
+			.then(() => self.skipWaiting())
+	);
 });
 
 self.addEventListener('activate', function(event){
@@ -43,6 +156,7 @@ self.addEventListener('activate', function(event){
 					}
 				}));
 			})
+			.then(() => clients.claim())
 	);
 });
 
@@ -52,79 +166,25 @@ self.addEventListener('fetch', function(event){
 		// Images and audio are always cache first
 		console.log('[SW] Cache First URL', event.request.url);
 		event.respondWith(
-			caches.match(event.request, {ignoreVary: true})
-				.then(function(response){
-					if(response && response.body){
-						console.log('[SW] Responding with cache');
-						return response;
-					}else{
-						console.log('[SW] Punting to network...', event.request);
-						clients.get(event.clientId).then((client)=>{
-							client.postMessage({
-								type: 'fetching',
-								msg: 'Fetching File',
+			MediaCacheFirst(event.request)
+				.then((res)=>{
+					caches.open(CACHE_MEDIA_NAME).then((cache)=>{
+						cache.keys().then(function(keys) {
+							PostClient(event.clientId, {
+								type: 'cached',
+								msg: 'Cached File',
+								count: keys.length,
 								url: event.request.url
 							});
 						});
-						return fetch(event.request.url).then((res)=>{
-							if( !res || !res.body ){
-								console.log('[SW] Network request failed. Returning undefined.');
-								return;
-							}
-							return caches.open(CACHE_MEDIA_NAME)
-								.then(function(cache) {
-									console.log('[SW] Adding to media cache');
-									cache.put(event.request.url, res.clone()).then(()=>{
-										cache.keys().then(function(keys) {
-											clients.get(event.clientId).then((client)=>{
-												client.postMessage({
-													type: 'cached',
-													msg: 'Cached File',
-													count: keys.length,
-													url: event.request.url
-												});
-											});
-										});
-									});
-									return res;
-								});
-						});
-					}
+					});
+					return res;
 				})
 		);
 	}else{
 		// Default to network with cache fallback
 		event.respondWith(
-			fetch(event.request.url)
-				.then(function(res){
-					// Skip caching the javascript bundle
-					// TODO: remove this before production
-					//if( event.request.url.includes('bundle.js') ) return res;
-					// Cache and return
-					console.log('fetch successful. adding to cache', CACHE_DYNAMIC_NAME)
-					return caches.open(CACHE_DYNAMIC_NAME)
-						.then(function(cache) {
-							//console.log("[SW] cache put", event.request.url)
-							// Temporarily disabling the cache
-							// TODO: reenable after development
-							// if(!event.request.url.startsWith("chrome-extension://"))
-							// 	cache.put(event.request.url, res.clone());
-							return res;
-						});
-				})
-				.catch(function(err){
-					// Network failed, try pulling from cache
-					console.log('[SW] Network failed. Attempting cache.')
-					return caches.match(event.request, {ignoreVary: true})
-						.then(function(response){
-							if(response){
-								return response;
-							}else{
-								// TODO: decide if we need to handle a failed network request that isn't cached
-								return;
-							}
-						});
-				})
+			NetworkFirst(event.request, CACHE_DYNAMIC_NAME)
 		);
 	}
 });

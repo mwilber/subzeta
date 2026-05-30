@@ -62,7 +62,7 @@ export class ApiSubsonic{
 				}
 			],
 			src: [
-				this.GetServerQuery('stream',{id: data.id})
+				this.GetServerQuery('download',{id: data.id})
 			]
 		};
 	}

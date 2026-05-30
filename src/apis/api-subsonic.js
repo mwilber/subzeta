@@ -1,3 +1,10 @@
+const API_VERSION = '1.16.1';
+const CLIENT_NAME = 'subzeta';
+const ToArray = (value) => {
+	if(!value) return [];
+	return Array.isArray(value) ? value : [value];
+};
+
 export class ApiSubsonic{
 
 	constructor(settings){
@@ -5,22 +12,41 @@ export class ApiSubsonic{
 	}
 
 	GetServerQuery(method, params){
+		const {server, apiKey} = this.settings;
 
-		let {server, user, pass} = this.settings;
+		if(!server || !apiKey) return;
 
-		if(server && user && pass){
-			let query = server+'/rest/'+method+'.view?u='+user+'&p='+pass+'&v=1.12.0&f=json&c=greenzeta';
-			for (const key in params) {
-				if (Object.hasOwnProperty.call(params, key)) {
-					query += '&'+key+'='+params[key];
-				}
-			}
-			return query;
-		}
+		const baseUrl = server.replace(/\/+$/, '');
+		const query = new URL(`${baseUrl}/rest/${method}.view`);
+		const searchParams = new URLSearchParams({
+			apiKey,
+			v: API_VERSION,
+			f: 'json',
+			c: CLIENT_NAME,
+			...params
+		});
+
+		query.search = searchParams.toString();
+		return query.toString();
+	}
+
+	async FetchJson(method, params = {}){
+		const url = this.GetServerQuery(method, params);
+		if(!url) return;
+
+		const response = await fetch(url);
+		if(!response.ok) return;
+
+		const data = await response.json();
+		const body = data['subsonic-response'];
+		if(!body || body.status !== 'ok') return;
+
+		return body;
 	}
 
 	FormatSongObject(data){
 		//TODO: validate the data object
+		const coverArtId = data.coverArt || data.albumId || data.id;
 		return {
 			id: data.id,
 			album: data.album,
@@ -30,145 +56,111 @@ export class ApiSubsonic{
 			title: data.title,
 			coverArt: [
 				{
-					src: this.GetServerQuery('getCoverArt',{id: data.id, size: 256}),
+					src: this.GetServerQuery('getCoverArt',{id: coverArtId, size: 256}),
 					sizes: '256x256', 
 					type: 'image/png'
 				}
 			],
 			src: [
-				this.GetServerQuery('download',{id: data.id})
+				this.GetServerQuery('stream',{id: data.id})
 			]
 		};
 	}
 
-	GetSong(id){
-		return fetch(this.GetServerQuery('getSong',{id: id}))
-			.then(response => response.json())
-			.then(
-				(data)=>{
-					if( !data['subsonic-response'] || data['subsonic-response'].status !== 'ok' ) return;
-					return this.FormatSongObject(data['subsonic-response'].song[0]);
-				}
-			);
+	async GetSong(id){
+		const body = await this.FetchJson('getSong', {id});
+		if(!body || !body.song) return;
+		const song = Array.isArray(body.song) ? body.song[0] : body.song;
+		return this.FormatSongObject(song);
 	}
 
-	GetAlbum(id){
+	async GetAlbum(id){
 		if(!id) return;
 
-		return fetch(this.GetServerQuery('getAlbum',{id: id}))
-			.then(response => response.json())
-			.then(
-				(data)=>{
-                console.log("🚀 ~ file: api-subsonic.js ~ line 63 ~ ApiSubsonic ~ GetAlbum ~ data", data)
-					if( !data['subsonic-response'] || 
-						data['subsonic-response'].status !== 'ok' || 
-						!data['subsonic-response'].album || 
-						!data['subsonic-response'].album.song
-						) return;
-					let playlistObj = {
-						name: data['subsonic-response'].album.name,
-						songs: []
-					}
-					data['subsonic-response'].album.song.forEach((song)=>{
-						playlistObj.songs.push(this.FormatSongObject(song))
-					});
-					return playlistObj;
-				}
-			);
+		const body = await this.FetchJson('getAlbum', {id});
+		if(!body || !body.album || !body.album.song) return;
+
+		const playlistObj = {
+			name: body.album.name,
+			songs: []
+		}
+		ToArray(body.album.song).forEach((song)=>{
+			playlistObj.songs.push(this.FormatSongObject(song))
+		});
+		return playlistObj;
 	}
 
-	GetArtistAlbums(id){
+	async GetArtistAlbums(id){
 		if(!id) return;
 
-		return fetch(this.GetServerQuery('getArtist',{id: id}))
-			.then(response => response.json())
-			.then(
-				(data)=>{
-                console.log("🚀 ~ file: api-subsonic.js ~ line 63 ~ ApiSubsonic ~ GetArtist ~ data", data)
-					if( !data['subsonic-response'] || 
-						data['subsonic-response'].status !== 'ok' || 
-						!data['subsonic-response'].artist || 
-						!data['subsonic-response'].artist.album
-						) return;
-					let playlistObj = {
-						albums: []
-					}
-					data['subsonic-response'].artist.album.forEach((album)=>{
-						playlistObj.albums.push(album)
-					});
-					return playlistObj;
-				}
-			);
+		const body = await this.FetchJson('getArtist', {id});
+		if(!body || !body.artist || !body.artist.album) return;
+
+		const playlistObj = {
+			albums: []
+		}
+		ToArray(body.artist.album).forEach((album)=>{
+			playlistObj.albums.push(album)
+		});
+		return playlistObj;
 	}
 
-	GetPlaylist(id){
+	async GetPlaylist(id){
 		// TODO: remove this defualt value
 		id = id || '800000013';
 
-		return fetch(this.GetServerQuery('getPlaylist',{id: id}))
-			.then(response => response.json())
-			.then(
-				(data)=>{
-					if( !data['subsonic-response'] || 
-						data['subsonic-response'].status !== 'ok' || 
-						!data['subsonic-response'].playlist || 
-						!data['subsonic-response'].playlist.entry
-						) return;
-					let playlistObj = {
-						name: data['subsonic-response'].playlist.name,
-						songs: []
-					}
-					data['subsonic-response'].playlist.entry.forEach((song)=>{
-						playlistObj.songs.push(this.FormatSongObject(song))
-					});
-					return playlistObj;
-				}
-			);
+		const body = await this.FetchJson('getPlaylist', {id});
+		if(!body || !body.playlist || !body.playlist.entry) return;
+
+		const playlistObj = {
+			name: body.playlist.name,
+			songs: []
+		}
+		ToArray(body.playlist.entry).forEach((song)=>{
+			playlistObj.songs.push(this.FormatSongObject(song))
+		});
+		return playlistObj;
 	}
 
-	GetPlaylists(){
-		return fetch(this.GetServerQuery('getPlaylists',{}))
-		.then(response => response.json())
-		.then(
-			(data)=>{
-				if( !data['subsonic-response'] || data['subsonic-response'].status !== 'ok' ) return;
+	async GetPlaylists(){
+		const body = await this.FetchJson('getPlaylists');
+		if(!body) return;
 
-				let playlistsObj = [];
-				if(data['subsonic-response'].playlists && data['subsonic-response'].playlists.playlist && data['subsonic-response'].playlists.playlist.slice)
-					playlistsObj = data['subsonic-response'].playlists.playlist.slice();
+		let playlistsObj = [];
+		if(body.playlists && body.playlists.playlist)
+			playlistsObj = ToArray(body.playlists.playlist);
 
-				return playlistsObj;
-			}
-		);
+		return playlistsObj;
 	}
 
-	GetSearch2(query){
+	async GetSearch3(query){
 		if(!query) return;
 
-		return fetch(this.GetServerQuery('search2',{query: query, songCount: 50}))
-			.then(response => response.json())
-			.then(
-				(data)=>{
-					if( !data['subsonic-response'] || data['subsonic-response'].status !== 'ok' ) return;
-					const {searchResult2} = data['subsonic-response'];
-					let searchResultObj = {
-						albums: [],
-						artists: [],
-						songs: []
-					}
-					// Format Songs
-					if(searchResult2.song && searchResult2.song.length)
-						searchResult2.song.forEach((song)=>{
-							searchResultObj.songs.push(this.FormatSongObject(song))
-						});
-					// Add Albums
-					if(searchResult2.album)
-						searchResultObj.albums = searchResult2.album.slice();
-					// Add artists
-					if(searchResult2.artist)
-						searchResultObj.artists = searchResult2.artist.slice();
-					return searchResultObj;
-				}
-			);
+		const body = await this.FetchJson('search3',{
+			query,
+			artistCount: 20,
+			albumCount: 20,
+			songCount: 50
+		});
+		if(!body || !body.searchResult3) return;
+
+		const {searchResult3} = body;
+		let searchResultObj = {
+			albums: [],
+			artists: [],
+			songs: []
+		}
+		// Format Songs
+		if(searchResult3.song)
+			ToArray(searchResult3.song).forEach((song)=>{
+				searchResultObj.songs.push(this.FormatSongObject(song))
+			});
+		// Add Albums
+		if(searchResult3.album)
+			searchResultObj.albums = ToArray(searchResult3.album);
+		// Add artists
+		if(searchResult3.artist)
+			searchResultObj.artists = ToArray(searchResult3.artist);
+		return searchResultObj;
 	}
 }

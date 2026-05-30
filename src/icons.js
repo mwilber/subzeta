@@ -1,4 +1,8 @@
-export const search = `
+import { html } from './vendor/@arrow-js/core/index.min.mjs';
+
+const icon = (markup) => html([markup.replace(/<!--[\s\S]*?-->/g, '')]);
+
+export const search = icon(`
 	<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 		viewBox="0 0 110 110" style="enable-background:new 0 0 110 110;" xml:space="preserve">
 	<path d="M94.77,88.36L71.34,64.94c3.91-5.34,6.22-11.92,6.22-19.04c0-17.83-14.5-32.33-32.33-32.33S12.9,28.07,12.9,45.9
@@ -7,9 +11,9 @@ export const search = `
 		c0,5.95-2.34,11.36-6.15,15.37c-0.15,0.12-0.31,0.22-0.44,0.36c-0.14,0.14-0.24,0.3-0.36,0.45c-4.01,3.81-9.42,6.15-15.37,6.15
 		C32.92,68.23,22.9,58.21,22.9,45.9z"/>
 	</svg>
-`;
+`);
 
-export const searchcircle = `
+export const searchcircle = icon(`
 	<svg
 		version="1.1"
 		xmlns="http://www.w3.org/2000/svg"
@@ -24,9 +28,9 @@ export const searchcircle = `
 			<path d="M150.27,0.18c-82.84,0-150,67.16-150,150c0,82.84,67.16,150,150,150c82.84,0,150-67.16,150-150C300.27,67.34,233.12,0.18,150.27,0.18z M232.81,245.57l-56.13-56.13c-12.31,9.58-27.73,15.34-44.5,15.34c-40.08,0-72.69-32.61-72.69-72.69s32.61-72.69,72.69-72.69s72.69,32.61,72.69,72.69c0,16.77-5.76,32.19-15.34,44.5l56.13,56.13L232.81,245.57z"/>
 		</g>
 	</svg>
-`;
+`);
 
-export const playlists = `
+export const playlists = icon(`
 	<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 		viewBox="0 0 110 110" style="enable-background:new 0 0 110 110;" xml:space="preserve">
 	<g>
@@ -44,9 +48,9 @@ export const playlists = `
 	</g>
 	<path d="M24.77,75.26h-10c-2.76,0-5,2.24-5,5v10c0,2.76,2.24,5,5,5h10c2.76,0,5-2.24,5-5v-10C29.77,77.5,27.54,75.26,24.77,75.26z"/>
 	</svg>
-`;
+`);
 
-export const queue = `
+export const queue = icon(`
 	<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 		viewBox="0 0 110 110" style="enable-background:new 0 0 110 110;" xml:space="preserve">
 	<path d="M81.94,8.81c-9.92,0-9.94,9.36-9.94,9.36v49.21c-3.41-2.29-7.8-3.93-12.91-3.93c-12.11,0-23.27,8.52-23.27,18.49
@@ -62,9 +66,9 @@ export const queue = `
 		<path d="M20.72,79.17H5.38c-2.76,0-5-2.24-5-5s2.24-5,5-5h15.34c2.76,0,5,2.24,5,5S23.48,79.17,20.72,79.17z"/>
 	</g>
 	</svg>
-`;
+`);
 
-export const settings = `
+export const settings = icon(`
 	<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 		viewBox="0 0 110 110" style="enable-background:new 0 0 110 110;" xml:space="preserve">
 	<path d="M83.47,20.55c1.25,1.04,1.69,2.76,1.19,4.31l-2.23,6.99c-0.55,1.76-0.2,3.67,0.79,5.2c0.27,0.43,0.54,0.87,0.8,1.32
@@ -82,9 +86,9 @@ export const settings = `
 		l4.93-5.41c1.09-1.2,2.8-1.68,4.33-1.12c2.09,0.78,4.13,1.71,6.1,2.81l1.43,0.82c1.89,1.14,3.7,2.41,5.42,3.83L83.47,20.55z
 		M61.85,67.41c6.72-3.88,9.03-12.48,5.15-19.2c-3.88-6.72-12.48-9.03-19.2-5.15s-9.03,12.48-5.15,19.2S55.12,71.29,61.85,67.41z"/>
 	</svg>
-`;
+`);
 
-export const pin = `
+export const pin = icon(`
 	<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
 	<path d="M394.01,251.02l-0.81-2.43c-11.18-33.62-42.77-52.48-72.5-68.6l-9.23-128.15h27.95c14.34,0,25.92-11.58,25.92-25.92
@@ -93,9 +97,9 @@ export const pin = `
 	c0,14.34,11.58,50.24,25.92,50.24c14.34,0,25.92-35.9,25.92-50.24V285.12h87.47c8.34,0,16.2-4.05,21.06-10.77
 	C395.31,267.63,396.68,258.96,394.01,251.02z"/>
 	</svg>
-`;
+`);
 
-export const cache = `
+export const cache = icon(`
 	<svg
 	id="Layer_1"
 	xmlns="http://www.w3.org/2000/svg"
@@ -119,16 +123,16 @@ export const cache = `
 	c-0.64,2.73-0.02,10.07,2.7,10.71s6.52-5.68,7.16-8.41l7.83-33.6l16.64,3.88c1.59,0.37,3.26-0.05,4.48-1.12
 	C104.18,65.19,104.83,63.6,104.67,61.97z"/>
 	</svg>
-`;
+`);
 
-export const shuffle = `
+export const shuffle = icon(`
 	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 	<!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
 	<path d="M403.8 34.4c12-5 25.7-2.2 34.9 6.9l64 64c6 6 9.4 14.1 9.4 22.6s-3.4 16.6-9.4 22.6l-64 64c-9.2 9.2-22.9 11.9-34.9 6.9s-19.8-16.6-19.8-29.6V160H352c-10.1 0-19.6 4.7-25.6 12.8L284 229.3 244 176l31.2-41.6C293.3 110.2 321.8 96 352 96h32V64c0-12.9 7.8-24.6 19.8-29.6zM164 282.7L204 336l-31.2 41.6C154.7 401.8 126.2 416 96 416H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H96c10.1 0 19.6-4.7 25.6-12.8L164 282.7zm274.6 188c-9.2 9.2-22.9 11.9-34.9 6.9s-19.8-16.6-19.8-29.6V416H352c-30.2 0-58.7-14.2-76.8-38.4L121.6 172.8c-6-8.1-15.5-12.8-25.6-12.8H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H96c30.2 0 58.7 14.2 76.8 38.4L326.4 339.2c6 8.1 15.5 12.8 25.6 12.8h32V320c0-12.9 7.8-24.6 19.8-29.6s25.7-2.2 34.9 6.9l64 64c6 6 9.4 14.1 9.4 22.6s-3.4 16.6-9.4 22.6l-64 64z"/>
 	</svg>
-`;
+`);
 
-export const play = `
+export const play = icon(`
 	<svg
 		id="icon-play" 
 		version="1.1" 
@@ -143,9 +147,9 @@ export const play = `
 			<path d="M150.27,0.18c-82.84,0-150,67.16-150,150s67.16,150,150,150s150-67.16,150-150S233.12,0.18,150.27,0.18z M118,206.5V93.87c0-4.3,4.66-6.99,8.38-4.84l72.75,56.32c3.73,2.15,3.73,7.53,0,9.68l-72.75,56.32C122.66,213.49,118,210.8,118,206.5z"/>
 		</g>
 	</svg>
-`;
+`);
 
-export const pause = `
+export const pause = icon(`
 	<svg
 		version="1.1"
 		id="icon-pause"
@@ -160,9 +164,9 @@ export const pause = `
 			<path d="M150.27,0.18c-82.84,0-150,67.16-150,150s67.16,150,150,150c82.84,0,150-67.16,150-150S233.12,0.18,150.27,0.18zM139.95,208c0,2.17-1.76,3.92-3.92,3.92h-25.03c-2.17,0-3.92-1.76-3.92-3.92V92.37c0-2.17,1.76-3.92,3.92-3.92h25.03c2.17,0,3.92,1.76,3.92,3.92V208z M193.47,208c0,2.17-1.76,3.92-3.92,3.92h-24.08c-2.17,0-3.92-1.76-3.92-3.92V92.37c0-2.17,1.76-3.92,3.92-3.92h24.08c2.17,0,3.92,1.76,3.92,3.92V208z"/>
 		</g>
 	</svg>
-`;
+`);
 
-export const next = `
+export const next = icon(`
 	<svg
 		version="1.1"
 		id="icon-next"
@@ -175,9 +179,9 @@ export const next = `
 	>
 		<path d="M50.27,56.47c0-5.4,5.85-8.78,10.53-6.08l153.54,88.64c-1.11-42.16-8.67-83.43-22.57-122.92c-1.01-2.88,0.44-6.03,3.3-7.08l23.16-8.51c2.9-1.07,6.14,0.43,7.17,3.34c16.52,46.79,24.89,95.87,24.89,145.98c0,50.35-8.45,99.66-25.13,146.66c-1.03,2.91-4.27,4.4-7.17,3.33l-23.14-8.55c-2.86-1.06-4.31-4.21-3.29-7.09c13.97-39.47,21.6-80.73,22.77-122.88L60.8,249.95c-4.68,2.7-10.53-0.68-10.53-6.08c0,0,10.53-34.09,10.53-94.75S50.27,56.47,50.27,56.47z"/>
 	</svg>
-`;
+`);
 
-export const previous = `
+export const previous = icon(`
 	<svg
 		version="1.1"
 		id="icon-previous"
@@ -190,20 +194,20 @@ export const previous = `
 	>
 		<path d="M250.28,56.47c0-5.4-5.85-8.78-10.53-6.08L86.21,139.03c1.11-42.16,8.67-83.43,22.57-122.92c1.01-2.88-0.44-6.03-3.3-7.08L82.33,0.53c-2.9-1.07-6.14,0.43-7.17,3.34C58.64,50.66,50.27,99.74,50.27,149.84c0,50.35,8.45,99.66,25.13,146.66c1.03,2.91,4.27,4.4,7.17,3.33l23.14-8.55c2.86-1.06,4.31-4.21,3.29-7.09c-13.97-39.47-21.6-80.73-22.77-122.88l153.52,88.63c4.68,2.7,10.53-0.68,10.53-6.08c0,0-10.53-34.09-10.53-94.75S250.28,56.47,250.28,56.47z"/>
 	</svg>
-`;
+`);
 
-export const forward = `
+export const forward = icon(`
 
-`;
+`);
 
-export const reverse = `
+export const reverse = icon(`
 
-`;
+`);
 
-export const spinner = `
+export const spinner = icon(`
 	<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto; background: rgb(255, 255, 255); display: block; shape-rendering: auto;" width="200px" height="200px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
 		<circle cx="50" cy="50" fill="none" stroke-width="10" r="45" stroke-dasharray="164.93361431346415 56.97787143782138">
 			<animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1"></animateTransform>
 		</circle>
 	<!-- [ldio] generated by https://loading.io/ --></svg>
-`;
+`);

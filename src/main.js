@@ -20,10 +20,22 @@ import playLists from './components/playlists.js';
 import search from './components/search.js';
 import navButton from './components/nav-button.js';
 
-const disableSW = false;
+const disableSW = true;
+const legacyDefaultServer = "https://ampache.greenzeta.com";
 
 window.swUpdate = () => {
 	alert("Service Worker is not registered.")
+}
+if (disableSW && 'serviceWorker' in navigator) {
+	window.addEventListener('load', async () => {
+		const registrations = await navigator.serviceWorker.getRegistrations();
+		await Promise.all(registrations.map(registration => registration.unregister()));
+
+		if ('caches' in window) {
+			const cacheNames = await caches.keys();
+			await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+		}
+	});
 }
 if (!disableSW && 'serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -51,9 +63,8 @@ let defaultState = {
 	fullscreen: false,
 	playing: false,
 	settings: {
-		server: "https://ampache.greenzeta.com",
-		user: "subzeta",
-		pass: "gzdemo"
+		server: "",
+		apiKey: ""
 	}
 };
 // Retrieve the state from localStorage, if available.
@@ -61,6 +72,23 @@ if(localStorage) {
 	let savedState = localStorage.getItem('subzeta-state');
 	if(savedState && savedState !== null)
 		defaultState = JSON.parse(savedState);
+
+	if (
+		defaultState.settings?.server === legacyDefaultServer &&
+		(defaultState.settings?.apiKey || defaultState.settings?.user || defaultState.settings?.pass)
+	) {
+		defaultState.settings = {
+			server: "",
+			apiKey: ""
+		};
+	}
+
+	if (!defaultState.settings?.apiKey) {
+		defaultState.settings = {
+			server: defaultState.settings?.server || "",
+			apiKey: ""
+		};
+	}
 
 	// Reset values
 	defaultState.playing = false;
@@ -83,7 +111,7 @@ const cSearch = new ControllerSearch(state, apiSubsonic);
 
 apiMediaSession.Init(apiHowler, cQueue);
 
-if(state.settings.server && state.settings.user && state.settings.pass) {
+if(state.settings.server && state.settings.apiKey) {
 	state.playlists = await apiSubsonic.GetPlaylists();
 	console.log("playlists", state.playlists);
 } else {

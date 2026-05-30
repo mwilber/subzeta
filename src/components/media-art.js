@@ -19,6 +19,6 @@ const BlackOrWhite = function (red, green, blue) {
 
 export default (data) => 
 	html`
-		<div id="display-artwork" style="background-image: url('${data.artwork}')"></div>
-		<img id="display-artwork-ref" src="${data.artwork}" crossorigin="Anonymous" @load="${(e) => HandleImg(e.target)}" />
+		<div id="display-artwork" style="${() => `background-image: url('${data.artwork || ''}')`}"></div>
+		<img id="display-artwork-ref" .src="${() => data.artwork || ''}" crossorigin="Anonymous" @load="${(e) => HandleImg(e.target)}" />
 	`;

@@ -15,11 +15,25 @@ const pushErrorDetails = (error) => ({
 	stack: error.stack
 });
 
+const isPushServiceAbort = (error) => (
+	error.name === 'AbortError' &&
+	String(error.message || '').toLowerCase().includes('push service')
+);
+
+const pushServiceError = () => new Error(
+	'Browser push service registration failed. Chrome has permission and the service worker is active, but its push service rejected the subscription. Try a normal Chrome window with Google services enabled, outside incognito or embedded browsers.'
+);
+
 const base64urlToUint8Array = (value) => {
 	const padding = '='.repeat((4 - (value.length % 4)) % 4);
 	const base64 = (value + padding).replace(/-/g, '+').replace(/_/g, '/');
 	const raw = atob(base64);
 	return Uint8Array.from([...raw].map((char) => char.charCodeAt(0)));
+};
+
+const toExactArrayBuffer = (value) => {
+	const buffer = value.buffer;
+	return buffer.slice(value.byteOffset, value.byteOffset + value.byteLength);
 };
 
 const uint8ArrayToBase64url = (value) => {
@@ -139,6 +153,18 @@ export class ApiPushNotifications {
 	async Subscribe(registration, applicationServerKey, label = 'initial') {
 		debug('Calling pushManager.subscribe().', { label });
 		try {
+			const permissionState = await registration.pushManager.permissionState({
+				userVisibleOnly: true,
+				applicationServerKey
+			}).catch((error) => {
+				debugError('pushManager.permissionState() failed.', {
+					label,
+					...pushErrorDetails(error)
+				});
+				return 'error';
+			});
+			debug('pushManager.permissionState().', { label, permissionState });
+
 			const subscription = await registration.pushManager.subscribe({
 				userVisibleOnly: true,
 				applicationServerKey
@@ -232,10 +258,15 @@ export class ApiPushNotifications {
 			try {
 				subscription = await this.Subscribe(registration, applicationServerKey);
 			} catch (error) {
-				if(error.name !== 'AbortError') throw error;
-				debug('Retrying push subscription after AbortError by refreshing service worker registration.');
+				if(!isPushServiceAbort(error)) throw error;
+				debug('Retrying push subscription after push service AbortError by refreshing service worker registration and using an exact ArrayBuffer key.');
 				registration = await this.GetFreshRegistration();
-				subscription = await this.Subscribe(registration, applicationServerKey, 'after-service-worker-refresh');
+				try {
+					subscription = await this.Subscribe(registration, toExactArrayBuffer(applicationServerKey), 'after-service-worker-refresh');
+				} catch (retryError) {
+					if(isPushServiceAbort(retryError)) throw pushServiceError();
+					throw retryError;
+				}
 			}
 		}
 

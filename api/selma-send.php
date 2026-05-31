@@ -40,8 +40,8 @@ if (!is_array($parts) || !in_array($parts['scheme'] ?? '', ['http', 'https'], tr
 }
 
 $payload = json_encode([
-	'transcript' => $text,
-	'source' => 'freevox_text',
+	'transcript' => 'Music player request: ' . $text,
+	'source' => 'subzeta',
 	'metadata' => [
 		'submitted_at' => gmdate('c'),
 	],

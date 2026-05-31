@@ -1,12 +1,14 @@
 import { reactive, watch, html } from './vendor/@arrow-js/core/index.min.mjs';
 
 import { ApiSubsonic } from './apis/api-subsonic.js';
+import { ApiSelma } from './apis/api-selma.js';
 import { ApiHowler } from './apis/api-howler.js';
 import { ApiMediaSession } from './apis/api-mediasession.js';
 
 import { ControllerQueue } from './controllers/controller-queue.js';
 import { ControllerCache } from './controllers/controller-cache.js';
 import { ControllerSearch } from './controllers/controller-search.js';
+import { ControllerSelma } from './controllers/controller-selma.js';
 
 import mediaPlayer from './components/media-player.js';
 import mediaQueue from './components/media-queue.js';
@@ -18,7 +20,9 @@ import mediaVolume from './components/media_volume.js';
 import settings from './components/settings.js';
 import playLists from './components/playlists.js';
 import search from './components/search.js';
+import selma from './components/selma.js';
 import navButton from './components/nav-button.js';
+import * as icons from './icons.js';
 
 const disableSW = false;
 const legacyDefaultServer = "https://ampache.greenzeta.com";
@@ -62,9 +66,18 @@ let defaultState = {
 	activepanel: "playlists",
 	fullscreen: false,
 	playing: false,
+	selma: {
+		revealed: false,
+		text: "",
+		status: "Tap Dictate and speak. The message sends automatically when dictation ends.",
+		listening: false,
+		sending: false
+	},
 	settings: {
 		server: "",
-		apiKey: ""
+		apiKey: "",
+		selmaBaseUrl: "",
+		selmaApiToken: ""
 	}
 };
 // Retrieve the state from localStorage, if available.
@@ -86,9 +99,21 @@ if(localStorage) {
 	if (!defaultState.settings?.apiKey) {
 		defaultState.settings = {
 			server: defaultState.settings?.server || "",
-			apiKey: ""
+			apiKey: "",
+			selmaBaseUrl: defaultState.settings?.selmaBaseUrl || "",
+			selmaApiToken: defaultState.settings?.selmaApiToken || ""
 		};
 	}
+
+	defaultState.settings.selmaBaseUrl = defaultState.settings.selmaBaseUrl || "";
+	defaultState.settings.selmaApiToken = defaultState.settings.selmaApiToken || "";
+	defaultState.selma = {
+		revealed: false,
+		text: "",
+		status: "Tap Dictate and speak. The message sends automatically when dictation ends.",
+		listening: false,
+		sending: false
+	};
 
 	// Reset values
 	defaultState.playing = false;
@@ -102,12 +127,14 @@ watch(() => {
 });
 
 const apiSubsonic = new ApiSubsonic(state.settings);
+const apiSelma = new ApiSelma(state.settings);
 const apiMediaSession = new ApiMediaSession();
 const apiHowler = new ApiHowler(state, apiMediaSession);
 
 const cCache = new ControllerCache('media_v0.14', state);
 const cQueue = new ControllerQueue(state, apiHowler, cCache);
 const cSearch = new ControllerSearch(state, apiSubsonic);
+const cSelma = new ControllerSelma(state, apiSelma);
 
 apiMediaSession.Init(apiHowler, cQueue);
 cQueue.RefreshCacheStatus();
@@ -167,6 +194,12 @@ html`
 		<navigation>
 			${() => navButton(state, 'search')}
 			${() => navButton(state, 'playlists')}
+			<button
+				aria-label="SELMA dictation"
+				title="SELMA"
+				@click="${() => cSelma.OpenDictation()}"
+				disabled="${() => state.activepanel == 'selma'}"
+			>${icons.selma}</button>
 			${() => navButton(state, 'queue')}
 			${() => navButton(state, 'settings')}
 		</navigation>
@@ -212,6 +245,13 @@ html`
 			${() => playLists(
 				state.playlists,
 				LoadPlaylistById,
+			)}
+		</div>
+
+		<div class="${() => panelClass('selma')}">
+			${() => selma(
+				state.selma,
+				cSelma
 			)}
 		</div>
 

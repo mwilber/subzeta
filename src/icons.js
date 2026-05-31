@@ -91,6 +91,13 @@ export const settings = icon(`
 	</svg>
 `);
 
+export const selma = icon(`
+	<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 110 110">
+		<path d="M55 10c-9.39 0-17 7.61-17 17v28c0 9.39 7.61 17 17 17s17-7.61 17-17V27c0-9.39-7.61-17-17-17z"/>
+		<path d="M84 48c-2.76 0-5 2.24-5 5 0 13.25-10.75 24-24 24S31 66.25 31 53c0-2.76-2.24-5-5-5s-5 2.24-5 5c0 16.99 12.67 31.03 29 33.19V95H38c-2.76 0-5 2.24-5 5s2.24 5 5 5h34c2.76 0 5-2.24 5-5s-2.24-5-5-5H60v-8.81C76.33 84.03 89 69.99 89 53c0-2.76-2.24-5-5-5z"/>
+	</svg>
+`);
+
 export const pin = icon(`
 	<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">

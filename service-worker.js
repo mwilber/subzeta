@@ -6,7 +6,7 @@
  * to build out your own caching strategy and other PWA features.
  */
 
-let CACHE_VERSION = '0.24';
+let CACHE_VERSION = '0.25';
 let MEDIA_CACHE_VERSION = '0.14';
 let CACHE_STATIC_NAME = 'static_v'+CACHE_VERSION;
 let CACHE_DYNAMIC_NAME = 'dynamic_v'+CACHE_VERSION;
@@ -26,6 +26,8 @@ let precacheUrls = [
 	'/src/icons.js',
 	'/src/apis/api-howler.js',
 	'/src/apis/api-mediasession.js',
+	'/src/apis/api-push-notifications.js',
+	'/src/apis/api-selma.js',
 	'/src/apis/api-subsonic.js',
 	'/src/components/media-art.js',
 	'/src/components/media-display.js',
@@ -37,10 +39,13 @@ let precacheUrls = [
 	'/src/components/nav-button.js',
 	'/src/components/playlists.js',
 	'/src/components/search.js',
+	'/src/components/selma.js',
 	'/src/components/settings.js',
 	'/src/controllers/controller-cache.js',
+	'/src/controllers/controller-push-notifications.js',
 	'/src/controllers/controller-queue.js',
 	'/src/controllers/controller-search.js',
+	'/src/controllers/controller-selma.js',
 	'/src/vendor/@arrow-js/core/index.min.mjs',
 	'/src/vendor/@arrow-js/core/index.js',
 	'/src/vendor/@arrow-js/core/chunks/internal-DchK7S7v.mjs',
@@ -248,6 +253,49 @@ self.addEventListener('fetch', function(event){
 			NetworkFirst(event.request, CACHE_DYNAMIC_NAME)
 		);
 	}
+});
+
+self.addEventListener('push', function(event){
+	let payload = {};
+	if(event.data){
+		try {
+			payload = event.data.json();
+		} catch (err) {
+			payload = { body: event.data.text() };
+		}
+	}
+
+	const title = payload.title || 'AI Queue ready';
+	const options = {
+		body: payload.body || 'Your AI Queue playlist has been updated.',
+		tag: payload.tag || 'ampache-ai-queue',
+		icon: payload.icon || '/assets/icons/icon-192x192.png',
+		badge: payload.badge || '/assets/icons/icon-96x96.png',
+		data: {
+			url: payload.url || '/?playlist=AI%20Queue',
+			...(payload.data || {})
+		}
+	};
+
+	event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener('notificationclick', function(event){
+	event.notification.close();
+	const targetUrl = new URL(event.notification.data?.url || '/?playlist=AI%20Queue', self.location.origin).href;
+
+	event.waitUntil(
+		self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList){
+			for(const client of clientList){
+				if('focus' in client){
+					if('navigate' in client) client.navigate(targetUrl);
+					return client.focus();
+				}
+			}
+
+			return self.clients.openWindow(targetUrl);
+		})
+	);
 });
 
 self.addEventListener('message', async function (event) {

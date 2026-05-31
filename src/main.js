@@ -4,11 +4,13 @@ import { ApiSubsonic } from './apis/api-subsonic.js';
 import { ApiSelma } from './apis/api-selma.js';
 import { ApiHowler } from './apis/api-howler.js';
 import { ApiMediaSession } from './apis/api-mediasession.js';
+import { ApiPushNotifications } from './apis/api-push-notifications.js';
 
 import { ControllerQueue } from './controllers/controller-queue.js';
 import { ControllerCache } from './controllers/controller-cache.js';
 import { ControllerSearch } from './controllers/controller-search.js';
 import { ControllerSelma } from './controllers/controller-selma.js';
+import { ControllerPushNotifications } from './controllers/controller-push-notifications.js';
 
 import mediaPlayer from './components/media-player.js';
 import mediaQueue from './components/media-queue.js';
@@ -43,7 +45,7 @@ if (disableSW && 'serviceWorker' in navigator) {
 }
 if (!disableSW && 'serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('../service-worker.js').then(registration => {
+        navigator.serviceWorker.register('/service-worker.js').then(registration => {
             console.log('SW registered: ', registration);
 			window.swUpdate = () => {
 				registration.update();
@@ -77,7 +79,15 @@ let defaultState = {
 		server: "",
 		apiKey: "",
 		selmaBaseUrl: "",
-		selmaApiToken: ""
+		selmaApiToken: "",
+		mcpPushToken: ""
+	},
+	push: {
+		enabled: false,
+		supported: false,
+		permission: 'default',
+		status: 'idle',
+		message: ''
 	}
 };
 // Retrieve the state from localStorage, if available.
@@ -92,7 +102,10 @@ if(localStorage) {
 	) {
 		defaultState.settings = {
 			server: "",
-			apiKey: ""
+			apiKey: "",
+			selmaBaseUrl: "",
+			selmaApiToken: "",
+			mcpPushToken: ""
 		};
 	}
 
@@ -101,12 +114,21 @@ if(localStorage) {
 			server: defaultState.settings?.server || "",
 			apiKey: "",
 			selmaBaseUrl: defaultState.settings?.selmaBaseUrl || "",
-			selmaApiToken: defaultState.settings?.selmaApiToken || ""
+			selmaApiToken: defaultState.settings?.selmaApiToken || "",
+			mcpPushToken: defaultState.settings?.mcpPushToken || ""
 		};
 	}
 
 	defaultState.settings.selmaBaseUrl = defaultState.settings.selmaBaseUrl || "";
 	defaultState.settings.selmaApiToken = defaultState.settings.selmaApiToken || "";
+	defaultState.settings.mcpPushToken = defaultState.settings.mcpPushToken || "";
+	defaultState.push = {
+		enabled: false,
+		supported: false,
+		permission: 'default',
+		status: 'idle',
+		message: ''
+	};
 	defaultState.selma = {
 		revealed: false,
 		text: "",
@@ -129,22 +151,18 @@ watch(() => {
 const apiSubsonic = new ApiSubsonic(state.settings);
 const apiSelma = new ApiSelma(state.settings);
 const apiMediaSession = new ApiMediaSession();
+const apiPush = new ApiPushNotifications(state.settings);
 const apiHowler = new ApiHowler(state, apiMediaSession);
 
 const cCache = new ControllerCache('media_v0.14', state);
 const cQueue = new ControllerQueue(state, apiHowler, cCache);
 const cSearch = new ControllerSearch(state, apiSubsonic);
 const cSelma = new ControllerSelma(state, apiSelma);
+const cPush = new ControllerPushNotifications(state, apiPush);
 
 apiMediaSession.Init(apiHowler, cQueue);
 cQueue.RefreshCacheStatus();
-
-if(state.settings.server && state.settings.apiKey) {
-	state.playlists = await apiSubsonic.GetPlaylists();
-	console.log("playlists", state.playlists);
-} else {
-	state.activepanel = "settings";
-}
+cPush.RefreshStatus();
 
 const LoadPlaylistById = async (id) => {
 	if(!id) return;
@@ -154,6 +172,27 @@ const LoadPlaylistById = async (id) => {
 	cQueue.LoadData(playlist);
 	state.activepanel = 'queue';
 	state.fullscreen = false;
+};
+
+const LoadPlaylistByName = async (name) => {
+	const cleanName = String(name || '').trim().toLowerCase();
+	if(!cleanName || !state.playlists?.length) return;
+	const playlist = state.playlists.find(item => String(item.name || '').trim().toLowerCase() === cleanName);
+	if(!playlist) return;
+	await LoadPlaylistById(playlist.id);
+};
+
+const LoadRoutePlaylist = async () => {
+	const params = new URLSearchParams(window.location.search);
+	const routePlaylist = params.get('playlist');
+	if(routePlaylist) {
+		await LoadPlaylistByName(routePlaylist);
+		return;
+	}
+
+	if(window.location.pathname.replace(/\/+$/, '') === '/ai-queue' || params.has('aiQueue')) {
+		await LoadPlaylistByName('AI Queue');
+	}
 };
 
 const LoadAlbumById = async (id, autoplay) => {
@@ -173,6 +212,14 @@ const LoadAlbumsByArtistId = async (id) => {
 	state.activepanel = 'search';
 	state.fullscreen = false;
 };
+
+if(state.settings.server && state.settings.apiKey) {
+	state.playlists = await apiSubsonic.GetPlaylists();
+	console.log("playlists", state.playlists);
+	await LoadRoutePlaylist();
+} else {
+	state.activepanel = "settings";
+}
 
 
 const panelClass = (panelName) => {
@@ -257,7 +304,8 @@ html`
 
 		<div class="${() => panelClass('settings')}">
 			${() => settings(
-				state
+				state,
+				cPush
 			)}
 		</div>
 	</div>

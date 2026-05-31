@@ -127,15 +127,41 @@ ul li button span {
 	border-radius: 0;
 }
 
-.settings .update-sw {
+.settings-actions {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-gap: 0.75em;
 	width: 80%;
-	margin: auto;
+	margin: 0 auto 1em;
+}
+
+.settings-actions button {
+	width: 100%;
 	padding: 1em 1.5em;
-	background: #732626;
 	color: var(--theme-color-lt);
 	text-transform: uppercase;
 	border: solid 1px var(--theme-color-md);
 	border-radius: 0;
+}
+
+.settings-actions button:disabled {
+	opacity: 0.55;
+}
+
+.settings .push-enable,
+.settings .push-test {
+	background: var(--accent-color-md);
+}
+
+.settings .push-disable,
+.settings .update-sw {
+	background: #732626;
+}
+
+.push-status {
+	margin: 0;
+	color: var(--theme-color-md);
+	font-size: 0.9em;
 }
 
 .selma.active {

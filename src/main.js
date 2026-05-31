@@ -110,6 +110,7 @@ const cQueue = new ControllerQueue(state, apiHowler, cCache);
 const cSearch = new ControllerSearch(state, apiSubsonic);
 
 apiMediaSession.Init(apiHowler, cQueue);
+cQueue.RefreshCacheStatus();
 
 if(state.settings.server && state.settings.apiKey) {
 	state.playlists = await apiSubsonic.GetPlaylists();

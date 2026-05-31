@@ -10,11 +10,13 @@ export class ControllerQueue {
 		// Listen for messages on the fetch/cache status from the ServiceWorker
 		navigator.serviceWorker.addEventListener("message", (event) => {
 			const { type: eventType } = event.data;
-			if (eventType !== 'fetching' & eventType !== 'cached') return;
+			if (eventType !== 'fetching' && eventType !== 'cached') return;
 
 			let tempQueue = JSON.parse(JSON.stringify(state.mediaqueue));
+			if(!tempQueue.songs) return;
+
 			tempQueue.songs.forEach((song) => {
-				if (song.src[0] === event.data.url) {
+				if (this._getSongUrl(song) === event.data.url) {
 					song.cached = eventType === 'fetching' ? -1 : 1;
 				}
 			});
@@ -35,8 +37,14 @@ export class ControllerQueue {
 		}
 	}
 
+	_getSongUrl(song){
+		if(!song || !song.src) return;
+		return Array.isArray(song.src) ? song.src[0] : song.src;
+	}
+
 	async _getCacheStatus (item) {
-		item.cached = await this.mediaCache.IsCached(item.src[0]);
+		const url = this._getSongUrl(item);
+		item.cached = await this.mediaCache.IsCached(url);
 		return item;
 	}
 
@@ -56,6 +64,14 @@ export class ControllerQueue {
 				this.state.activepanel = 'queue';
 				this.state.fullscreen = true;
 			}
+		});
+	}
+
+	RefreshCacheStatus(){
+		if(!this.state.mediaqueue.songs) return;
+
+		this._getCacheData(JSON.parse(JSON.stringify(this.state.mediaqueue.songs))).then(cacheData => {
+			this.state.mediaqueue = {...this.state.mediaqueue, songs: cacheData};
 		});
 	}
 

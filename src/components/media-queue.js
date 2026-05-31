@@ -21,9 +21,6 @@ const RenderListing = (data, queue) => {
 	`;
 	if(data.songs && data.songs.length) songs = data.songs.map(
 		(song) => {
-			let cachedIcon = '';
-			if(song.cached === -1) cachedIcon = spinner;
-			if(song.cached === 1) cachedIcon = pin;
 			return html`
 				<li>
 					<button 

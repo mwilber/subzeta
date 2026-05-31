@@ -1,6 +1,9 @@
 import { html } from './vendor/@arrow-js/core/index.min.mjs';
 
-const icon = (markup) => html([markup.replace(/<!--[\s\S]*?-->/g, '')]);
+const icon = (markup) => {
+	const cleanMarkup = markup.replace(/<!--[\s\S]*?-->/g, '');
+	return () => html([cleanMarkup]);
+};
 
 export const search = icon(`
 	<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"

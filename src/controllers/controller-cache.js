@@ -18,6 +18,7 @@ export class ControllerCache{
 	// TODO: expand on this to check other caches besides media
 	async IsCached(url){
 		if(!url) return null;
+		await navigator.serviceWorker.ready;
 		let cache = await caches.open(this.mediaCacheName);
 		let match = await cache.match(url, {ignoreVary: true});
 		if(match && match.body){
@@ -31,7 +32,8 @@ export class ControllerCache{
 
 		this.paths = null;
 		this.paths = playlist.songs.reduce((response, song)=>{
-			response.push(song.coverArt[0].src, ...song.src);
+			const songSources = Array.isArray(song.src) ? song.src : [song.src];
+			response.push(song.coverArt[0].src, ...songSources);
 			return response;
 		}, []);
 

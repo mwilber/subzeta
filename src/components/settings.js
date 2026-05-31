@@ -44,10 +44,10 @@ export default (state, cPush) => html`
 				@click="${() => cPush.SendTest()}"
 			>Test</button>
 		</div>
+		<p class="push-status">${() => state.push.message}</p>
 		<input type="submit" class="search" value="Save" />
 	</form>
 	<div class="settings-actions">
 		<button class="update-sw" @click="${() => window.swUpdate()}">Update SW</button>
-		<p class="push-status">${() => state.push.message}</p>
 	</div>
 `

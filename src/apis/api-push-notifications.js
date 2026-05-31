@@ -1,4 +1,4 @@
-const AI_QUEUE_URL = '/?playlist=AI%20Queue';
+const AI_QUEUE_URL = '/?playlist=AI%20Queue&autoplay=1';
 
 const isPushServiceAbort = (error) => (
 	error.name === 'AbortError' &&

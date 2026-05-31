@@ -6,12 +6,12 @@
  * to build out your own caching strategy and other PWA features.
  */
 
-let CACHE_VERSION = '0.27';
+let CACHE_VERSION = '0.28';
 let MEDIA_CACHE_VERSION = '0.14';
 let CACHE_STATIC_NAME = 'static_v'+CACHE_VERSION;
 let CACHE_DYNAMIC_NAME = 'dynamic_v'+CACHE_VERSION;
 let CACHE_MEDIA_NAME = 'media_v'+MEDIA_CACHE_VERSION;
-let AI_QUEUE_URL = '/?playlist=AI%20Queue';
+let AI_QUEUE_URL = '/?playlist=AI%20Queue&autoplay=1';
 let cacheFirst = ['getCoverArt.view', 'download.view'];
 let precacheUrls = [
 	'/',
@@ -189,6 +189,7 @@ function GetNotificationClickUrl(value){
 		return new URL(AI_QUEUE_URL, self.location.origin).href;
 	}
 
+	url.searchParams.set('autoplay', '1');
 	return url.href;
 }
 

@@ -164,34 +164,35 @@ apiMediaSession.Init(apiHowler, cQueue);
 cQueue.RefreshCacheStatus();
 cPush.RefreshStatus();
 
-const LoadPlaylistById = async (id) => {
+const LoadPlaylistById = async (id, autoplay) => {
 	if(!id) return;
 	
 	//id = "800000013";
 	let playlist = await apiSubsonic.GetPlaylist(id);
-	cQueue.LoadData(playlist);
+	cQueue.LoadData(playlist, autoplay);
 	state.activepanel = 'queue';
-	state.fullscreen = false;
+	state.fullscreen = Boolean(autoplay);
 };
 
-const LoadPlaylistByName = async (name) => {
+const LoadPlaylistByName = async (name, autoplay) => {
 	const cleanName = String(name || '').trim().toLowerCase();
 	if(!cleanName || !state.playlists?.length) return;
 	const playlist = state.playlists.find(item => String(item.name || '').trim().toLowerCase() === cleanName);
 	if(!playlist) return;
-	await LoadPlaylistById(playlist.id);
+	await LoadPlaylistById(playlist.id, autoplay);
 };
 
 const LoadRoutePlaylist = async () => {
 	const params = new URLSearchParams(window.location.search);
 	const routePlaylist = params.get('playlist');
+	const autoplay = params.get('autoplay') === '1';
 	if(routePlaylist) {
-		await LoadPlaylistByName(routePlaylist);
+		await LoadPlaylistByName(routePlaylist, autoplay);
 		return;
 	}
 
 	if(window.location.pathname.replace(/\/+$/, '') === '/ai-queue' || params.has('aiQueue')) {
-		await LoadPlaylistByName('AI Queue');
+		await LoadPlaylistByName('AI Queue', autoplay);
 	}
 };
 

@@ -127,6 +127,25 @@ ul li button span {
 	border-radius: 0;
 }
 
+.notification-actions {
+	display: flex;
+	gap: 0.75em;
+}
+
+.notification-actions button {
+	flex: 1 1 0;
+	width: 100%;
+	padding: 1em;
+	color: var(--theme-color-lt);
+	text-transform: uppercase;
+	border: solid 1px var(--theme-color-md);
+	border-radius: 0;
+}
+
+.notification-actions button[hidden] {
+	display: none;
+}
+
 .settings-actions {
 	display: grid;
 	grid-template-columns: 1fr;
@@ -142,10 +161,6 @@ ul li button span {
 	text-transform: uppercase;
 	border: solid 1px var(--theme-color-md);
 	border-radius: 0;
-}
-
-.settings-actions button:disabled {
-	opacity: 0.55;
 }
 
 .settings .push-enable,

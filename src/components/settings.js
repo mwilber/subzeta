@@ -24,24 +24,29 @@ export default (state, cPush) => html`
 		<input id="selma-api-token" type="password" placeholder="SELMA API token" .value="${() => state.settings.selmaApiToken}" />
 		<h3>AI Queue Notifications</h3>
 		<input id="mcp-push-token" type="password" placeholder="MCP push token (defaults to API key)" .value="${() => state.settings.mcpPushToken}" />
+		<div class="notification-actions">
+			<button
+				type="button"
+				class="push-enable"
+				hidden="${() => state.push.status === 'working' || state.push.enabled}"
+				@click="${() => cPush.Enable()}"
+			>Enable</button>
+			<button
+				type="button"
+				class="push-disable"
+				hidden="${() => state.push.status === 'working' || !state.push.enabled}"
+				@click="${() => cPush.Disable()}"
+			>Disable</button>
+			<button
+				type="button"
+				class="push-test"
+				hidden="${() => state.push.status === 'working' || !state.push.enabled}"
+				@click="${() => cPush.SendTest()}"
+			>Test</button>
+		</div>
 		<input type="submit" class="search" value="Save" />
 	</form>
 	<div class="settings-actions">
-		<button
-			class="push-enable"
-			disabled="${() => state.push.status === 'working' || state.push.enabled}"
-			@click="${() => cPush.Enable()}"
-		>Enable AI Queue Notifications</button>
-		<button
-			class="push-disable"
-			disabled="${() => state.push.status === 'working' || !state.push.enabled}"
-			@click="${() => cPush.Disable()}"
-		>Disable Notifications</button>
-		<button
-			class="push-test"
-			disabled="${() => state.push.status === 'working' || !state.push.enabled}"
-			@click="${() => cPush.SendTest()}"
-		>Send Test Notification</button>
 		<button class="update-sw" @click="${() => window.swUpdate()}">Update SW</button>
 		<p class="push-status">${() => state.push.message}</p>
 	</div>

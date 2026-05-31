@@ -11,7 +11,7 @@
 		"client_mode": ["focus-existing, auto"]
 	},
 	"orientation": "any",
-	"Scope": "/",
+	"scope": "/",
 	"start_url": "/",
 	"icons": [
 	  {

@@ -9,6 +9,12 @@ const debugError = (...args) => {
 	console.error(DEBUG_PREFIX, ...args);
 };
 
+const pushErrorDetails = (error) => ({
+	name: error.name,
+	message: error.message,
+	stack: error.stack
+});
+
 const base64urlToUint8Array = (value) => {
 	const padding = '='.repeat((4 - (value.length % 4)) % 4);
 	const base64 = (value + padding).replace(/-/g, '+').replace(/_/g, '/');
@@ -49,7 +55,8 @@ export class ApiPushNotifications {
 		debug('Getting service worker registration.', {
 			controller: Boolean(navigator.serviceWorker.controller),
 			readyState: document.readyState,
-			secureContext: window.isSecureContext
+			secureContext: window.isSecureContext,
+			userAgent: navigator.userAgent
 		});
 		const existing = await navigator.serviceWorker.getRegistration('/');
 		debug('Existing service worker registration.', {
@@ -74,6 +81,81 @@ export class ApiPushNotifications {
 			activeState: ready.active?.state
 		});
 		return ready;
+	}
+
+	async GetFreshRegistration() {
+		debug('Refreshing service worker registration before retry.');
+		const existing = await navigator.serviceWorker.getRegistration('/');
+		if(existing) {
+			const removed = await existing.unregister();
+			debug('Unregistered existing service worker registration.', {
+				removed,
+				scope: existing.scope
+			});
+		}
+
+		const created = await navigator.serviceWorker.register('/service-worker.js', {
+			updateViaCache: 'none'
+		});
+		debug('Registered fresh service worker.', {
+			scope: created.scope,
+			activeState: created.active?.state,
+			waitingState: created.waiting?.state,
+			installingState: created.installing?.state
+		});
+		const ready = await navigator.serviceWorker.ready;
+		debug('Fresh service worker ready.', {
+			scope: ready.scope,
+			activeState: ready.active?.state
+		});
+		return ready;
+	}
+
+	async LogManifestDiagnostics() {
+		try {
+			const manifestHref = document.querySelector('link[rel="manifest"]')?.href;
+			if(!manifestHref) {
+				debug('Manifest diagnostics.', { found: false });
+				return;
+			}
+
+			const response = await fetch(manifestHref, { cache: 'reload' });
+			const manifest = await response.json();
+			debug('Manifest diagnostics.', {
+				found: true,
+				url: manifestHref,
+				ok: response.ok,
+				status: response.status,
+				gcmSenderId: manifest.gcm_sender_id,
+				scope: manifest.scope,
+				legacyScope: manifest.Scope,
+				startUrl: manifest.start_url
+			});
+		} catch (error) {
+			debugError('Manifest diagnostics failed.', pushErrorDetails(error));
+		}
+	}
+
+	async Subscribe(registration, applicationServerKey, label = 'initial') {
+		debug('Calling pushManager.subscribe().', { label });
+		try {
+			const subscription = await registration.pushManager.subscribe({
+				userVisibleOnly: true,
+				applicationServerKey
+			});
+			debug('pushManager.subscribe() succeeded.', {
+				label,
+				endpoint: subscription.endpoint,
+				keys: Object.keys(subscription.toJSON()?.keys || {})
+			});
+			return subscription;
+		} catch (error) {
+			debugError('pushManager.subscribe() failed.', {
+				label,
+				...pushErrorDetails(error)
+			});
+			throw error;
+		}
 	}
 
 	async GetPublicKey() {
@@ -118,7 +200,8 @@ export class ApiPushNotifications {
 		const userToken = this.GetUserToken();
 		if(!userToken) throw new Error('MCP push token or Ampache API token is missing.');
 
-		const registration = await this.GetRegistration();
+		await this.LogManifestDiagnostics();
+		let registration = await this.GetRegistration();
 		const permission = await Notification.requestPermission();
 		debug('Notification permission result.', { permission });
 		if(permission !== 'granted') throw new Error('Notification permission was not granted.');
@@ -146,23 +229,13 @@ export class ApiPushNotifications {
 		}
 
 		if(!subscription) {
-			debug('Calling pushManager.subscribe().');
 			try {
-				subscription = await registration.pushManager.subscribe({
-					userVisibleOnly: true,
-					applicationServerKey
-				});
-				debug('pushManager.subscribe() succeeded.', {
-					endpoint: subscription.endpoint,
-					keys: Object.keys(subscription.toJSON()?.keys || {})
-				});
+				subscription = await this.Subscribe(registration, applicationServerKey);
 			} catch (error) {
-				debugError('pushManager.subscribe() failed.', {
-					name: error.name,
-					message: error.message,
-					stack: error.stack
-				});
-				throw error;
+				if(error.name !== 'AbortError') throw error;
+				debug('Retrying push subscription after AbortError by refreshing service worker registration.');
+				registration = await this.GetFreshRegistration();
+				subscription = await this.Subscribe(registration, applicationServerKey, 'after-service-worker-refresh');
 			}
 		}
 

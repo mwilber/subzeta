@@ -6,7 +6,7 @@
  * to build out your own caching strategy and other PWA features.
  */
 
-let CACHE_VERSION = '0.23';
+let CACHE_VERSION = '0.24';
 let MEDIA_CACHE_VERSION = '0.14';
 let CACHE_STATIC_NAME = 'static_v'+CACHE_VERSION;
 let CACHE_DYNAMIC_NAME = 'dynamic_v'+CACHE_VERSION;
@@ -15,7 +15,45 @@ let cacheFirst = ['getCoverArt.view', 'download.view'];
 let precacheUrls = [
 	'/',
 	'/index.html',
-	'/styles/main.css'
+	'/manifest.json',
+	'/styles/main.css',
+	'/styles/_reset.css',
+	'/styles/_layout.css',
+	'/styles/_panel.css',
+	'/styles/_navigation.css',
+	'/styles/_mediaplayer.css',
+	'/src/main.js',
+	'/src/icons.js',
+	'/src/apis/api-howler.js',
+	'/src/apis/api-mediasession.js',
+	'/src/apis/api-subsonic.js',
+	'/src/components/media-art.js',
+	'/src/components/media-display.js',
+	'/src/components/media-player.js',
+	'/src/components/media-queue.js',
+	'/src/components/media-time.js',
+	'/src/components/media_scrubber.js',
+	'/src/components/media_volume.js',
+	'/src/components/nav-button.js',
+	'/src/components/playlists.js',
+	'/src/components/search.js',
+	'/src/components/settings.js',
+	'/src/controllers/controller-cache.js',
+	'/src/controllers/controller-queue.js',
+	'/src/controllers/controller-search.js',
+	'/src/vendor/@arrow-js/core/index.min.mjs',
+	'/src/vendor/@arrow-js/core/index.js',
+	'/src/vendor/@arrow-js/core/chunks/internal-DchK7S7v.mjs',
+	'/src/vendor/nosleep/index.js',
+	'/src/vendor/nosleep/media.js',
+	'/assets/icons/icon-72x72.png',
+	'/assets/icons/icon-96x96.png',
+	'/assets/icons/icon-128x128.png',
+	'/assets/icons/icon-144x144.png',
+	'/assets/icons/icon-152x152.png',
+	'/assets/icons/icon-192x192.png',
+	'/assets/icons/icon-384x384.png',
+	'/assets/icons/icon-512x512.png'
 ];
 
 const isCacheableRequest = (request) => request.method === 'GET' && request.url.startsWith('http');
@@ -29,6 +67,24 @@ async function PutInCache(cacheName, request, response){
 		await cache.put(request, response.clone());
 	} catch (err) {
 		console.log('[SW] Cache put failed.', err);
+	}
+}
+
+async function MatchCache(request){
+	const cachedResponse = await caches.match(request, {ignoreVary: true});
+	if(cachedResponse) return cachedResponse;
+
+	const url = typeof request === 'string' ? request : request.url;
+	if(!url) return;
+
+	const urlResponse = await caches.match(url, {ignoreVary: true});
+	if(urlResponse) return urlResponse;
+
+	const cacheNames = await caches.keys();
+	for(const cacheName of cacheNames){
+		const cache = await caches.open(cacheName);
+		const cacheResponse = await cache.match(url, {ignoreVary: true});
+		if(cacheResponse) return cacheResponse;
 	}
 }
 
@@ -82,7 +138,7 @@ async function RangeResponse(request, response){
 }
 
 async function MediaCacheFirst(request){
-	const cachedResponse = await caches.match(request, {ignoreVary: true});
+	const cachedResponse = await MatchCache(request);
 	if(cachedResponse && cachedResponse.body){
 		console.log('[SW] Responding with media cache');
 		if(request.headers.has('range')){
@@ -108,12 +164,12 @@ async function MediaCacheFirst(request){
 
 async function NetworkFirst(request, cacheName){
 	try {
-		const response = await fetch(request);
+		const response = await fetch(request, {cache: 'reload'});
 		await PutInCache(cacheName, request, response);
 		return response;
 	} catch (err) {
 		console.log('[SW] Network failed. Attempting cache.', err);
-		const cachedResponse = await caches.match(request, {ignoreVary: true});
+		const cachedResponse = await MatchCache(request);
 		if(cachedResponse) return cachedResponse;
 		throw err;
 	}
@@ -126,7 +182,7 @@ self.addEventListener('install', function(event){
 			.then(function(cache){
 				console.log('[SW] precaching');
 				return Promise.all(precacheUrls.map(function(url){
-					return fetch(url)
+					return fetch(url, {cache: 'reload'})
 						.then(function(response){
 							if(!isCacheableResponse(response)) return;
 							return cache.put(url, response);
@@ -162,6 +218,11 @@ self.addEventListener('activate', function(event){
 
 self.addEventListener('fetch', function(event){
 	console.log("[SW] Heard fetch", event.request.url);
+	if(event.request.method !== 'GET'){
+		event.respondWith(fetch(event.request));
+		return;
+	}
+
 	if( cacheFirst.some(v => event.request.url.includes(v)) ){
 		// Images and audio are always cache first
 		console.log('[SW] Cache First URL', event.request.url);

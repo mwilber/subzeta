@@ -16,10 +16,15 @@ export default (selma, controller) => html`
 		</div>
 		<div class="${() => selma.revealed ? 'selma-input revealed' : 'selma-input'}">
 			<textarea
-				readonly
 				placeholder="Voice dictation will appear here before it is sent."
 				.value="${() => selma.text}"
+				@input="${(event) => selma.text = event.target.value}"
 			></textarea>
+			<button
+				class="selma-send"
+				disabled="${() => selma.sending || selma.listening}"
+				@click="${() => controller.SendTypedMessage()}"
+			>Send typed input</button>
 			<p role="status">${() => selma.status}</p>
 		</div>
 	</section>

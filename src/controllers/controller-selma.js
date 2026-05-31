@@ -120,6 +120,16 @@ export class ControllerSelma {
 		await this.SendMessage(message);
 	}
 
+	async SendTypedMessage() {
+		const message = this.state.selma.text.trim();
+		if (!message) {
+			this.state.selma.status = 'Enter text before sending.';
+			return;
+		}
+
+		await this.SendMessage(message);
+	}
+
 	async SendMessage(message) {
 		this.state.selma.sending = true;
 		this.state.selma.status = 'Sending to SELMA...';

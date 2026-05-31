@@ -9,20 +9,15 @@ export class ApiSelma {
 		if (!cleanText) throw new Error('No dictation captured.');
 		if (!selmaBaseUrl || !selmaApiToken) throw new Error('SELMA settings are missing.');
 
-		const baseUrl = selmaBaseUrl.replace(/\/+$/, '');
-		const submittedAt = new Date().toISOString();
-		const response = await fetch(`${baseUrl}/api/agent-runs`, {
+		const response = await fetch('api/selma-send.php', {
 			method: 'POST',
 			headers: {
-				Authorization: `Bearer ${selmaApiToken}`,
 				'Content-Type': 'application/json'
 			},
 			body: JSON.stringify({
-				transcript: cleanText,
-				source: 'freevox_text',
-				metadata: {
-					submitted_at: submittedAt
-				}
+				text: cleanText,
+				selmaBaseUrl,
+				selmaApiToken
 			})
 		});
 

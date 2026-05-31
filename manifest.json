@@ -6,6 +6,7 @@
 	"theme_color": "#7bb951",
 	"background_color": "#111313",
 	"display": "standalone",
+	"gcm_sender_id": "103953800507",
 	"launch_handler": {
 		"client_mode": ["focus-existing, auto"]
 	},

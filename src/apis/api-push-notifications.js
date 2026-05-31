@@ -37,9 +37,9 @@ export class ApiPushNotifications {
 
 	async GetRegistration() {
 		if(!this.supported) throw new Error('Push notifications are not supported by this browser.');
-		const existing = await navigator.serviceWorker.getRegistration();
-		if(existing) return existing;
-		return navigator.serviceWorker.register('/service-worker.js');
+		const existing = await navigator.serviceWorker.getRegistration('/');
+		if(!existing) await navigator.serviceWorker.register('/service-worker.js');
+		return navigator.serviceWorker.ready;
 	}
 
 	async GetPublicKey() {

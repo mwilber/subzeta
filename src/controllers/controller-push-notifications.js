@@ -39,7 +39,6 @@ export class ControllerPushNotifications {
 			await this.api.Enable();
 			this.SetStatus('enabled', 'AI Queue notifications are enabled.', true);
 		} catch (error) {
-			console.error('[SubZeta Push]', 'Enable failed.', error);
 			this.SetStatus('error', error.message || 'Unable to enable AI Queue notifications.', false);
 		}
 	}

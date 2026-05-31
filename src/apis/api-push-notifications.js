@@ -1,19 +1,4 @@
 const AI_QUEUE_URL = '/?playlist=AI%20Queue';
-const DEBUG_PREFIX = '[SubZeta Push]';
-
-const debug = (...args) => {
-	console.log(DEBUG_PREFIX, ...args);
-};
-
-const debugError = (...args) => {
-	console.error(DEBUG_PREFIX, ...args);
-};
-
-const pushErrorDetails = (error) => ({
-	name: error.name,
-	message: error.message,
-	stack: error.stack
-});
 
 const isPushServiceAbort = (error) => (
 	error.name === 'AbortError' &&
@@ -66,143 +51,29 @@ export class ApiPushNotifications {
 
 	async GetRegistration() {
 		if(!this.supported) throw new Error('Push notifications are not supported by this browser.');
-		debug('Getting service worker registration.', {
-			controller: Boolean(navigator.serviceWorker.controller),
-			readyState: document.readyState,
-			secureContext: window.isSecureContext,
-			userAgent: navigator.userAgent
-		});
 		const existing = await navigator.serviceWorker.getRegistration('/');
-		debug('Existing service worker registration.', {
-			found: Boolean(existing),
-			scope: existing?.scope,
-			activeState: existing?.active?.state,
-			waitingState: existing?.waiting?.state,
-			installingState: existing?.installing?.state
-		});
-		if(!existing) {
-			const created = await navigator.serviceWorker.register('/service-worker.js');
-			debug('Registered service worker.', {
-				scope: created.scope,
-				activeState: created.active?.state,
-				waitingState: created.waiting?.state,
-				installingState: created.installing?.state
-			});
-		}
-		const ready = await navigator.serviceWorker.ready;
-		debug('Service worker ready.', {
-			scope: ready.scope,
-			activeState: ready.active?.state
-		});
-		return ready;
+		if(!existing) await navigator.serviceWorker.register('/service-worker.js');
+		return navigator.serviceWorker.ready;
 	}
 
 	async GetFreshRegistration() {
-		debug('Refreshing service worker registration before retry.');
 		const existing = await navigator.serviceWorker.getRegistration('/');
-		if(existing) {
-			const removed = await existing.unregister();
-			debug('Unregistered existing service worker registration.', {
-				removed,
-				scope: existing.scope
-			});
-		}
+		if(existing) await existing.unregister();
 
-		const created = await navigator.serviceWorker.register('/service-worker.js', {
+		await navigator.serviceWorker.register('/service-worker.js', {
 			updateViaCache: 'none'
 		});
-		debug('Registered fresh service worker.', {
-			scope: created.scope,
-			activeState: created.active?.state,
-			waitingState: created.waiting?.state,
-			installingState: created.installing?.state
-		});
-		const ready = await navigator.serviceWorker.ready;
-		debug('Fresh service worker ready.', {
-			scope: ready.scope,
-			activeState: ready.active?.state
-		});
-		return ready;
-	}
-
-	async LogManifestDiagnostics() {
-		try {
-			const manifestHref = document.querySelector('link[rel="manifest"]')?.href;
-			if(!manifestHref) {
-				debug('Manifest diagnostics.', { found: false });
-				return;
-			}
-
-			const response = await fetch(manifestHref, { cache: 'reload' });
-			const manifest = await response.json();
-			debug('Manifest diagnostics.', {
-				found: true,
-				url: manifestHref,
-				ok: response.ok,
-				status: response.status,
-				gcmSenderId: manifest.gcm_sender_id,
-				scope: manifest.scope,
-				legacyScope: manifest.Scope,
-				startUrl: manifest.start_url
-			});
-		} catch (error) {
-			debugError('Manifest diagnostics failed.', pushErrorDetails(error));
-		}
-	}
-
-	async Subscribe(registration, applicationServerKey, label = 'initial') {
-		debug('Calling pushManager.subscribe().', { label });
-		try {
-			const permissionState = await registration.pushManager.permissionState({
-				userVisibleOnly: true,
-				applicationServerKey
-			}).catch((error) => {
-				debugError('pushManager.permissionState() failed.', {
-					label,
-					...pushErrorDetails(error)
-				});
-				return 'error';
-			});
-			debug('pushManager.permissionState().', { label, permissionState });
-
-			const subscription = await registration.pushManager.subscribe({
-				userVisibleOnly: true,
-				applicationServerKey
-			});
-			debug('pushManager.subscribe() succeeded.', {
-				label,
-				endpoint: subscription.endpoint,
-				keys: Object.keys(subscription.toJSON()?.keys || {})
-			});
-			return subscription;
-		} catch (error) {
-			debugError('pushManager.subscribe() failed.', {
-				label,
-				...pushErrorDetails(error)
-			});
-			throw error;
-		}
+		return navigator.serviceWorker.ready;
 	}
 
 	async GetPublicKey() {
 		const baseUrl = this.GetMcpBaseUrl();
 		if(!baseUrl) throw new Error('Ampache server is missing.');
 
-		debug('Fetching MCP VAPID public key.', { url: `${baseUrl}/push/public-key` });
 		const response = await fetch(`${baseUrl}/push/public-key`);
-		debug('MCP VAPID public key response.', {
-			ok: response.ok,
-			status: response.status,
-			statusText: response.statusText
-		});
 		if(!response.ok) throw new Error('Unable to load the VAPID public key.');
 
 		const { publicKey, configured } = await response.json();
-		debug('MCP VAPID public key payload.', {
-			configured,
-			hasPublicKey: Boolean(publicKey),
-			publicKeyLength: publicKey?.length
-		});
 		if(!configured || !publicKey) throw new Error('Ampache MCP push notifications are not configured.');
 		return publicKey;
 	}
@@ -214,55 +85,37 @@ export class ApiPushNotifications {
 	}
 
 	async Enable() {
-		debug('Enable started.', {
-			supported: this.supported,
-			permission: Notification?.permission,
-			hasServer: Boolean(this.settings.server),
-			hasApiKey: Boolean(this.settings.apiKey),
-			hasPushToken: Boolean(this.settings.mcpPushToken),
-			mcpBaseUrl: this.GetMcpBaseUrl()
-		});
 		if(!this.supported) throw new Error('Push notifications are not supported by this browser.');
 		const userToken = this.GetUserToken();
 		if(!userToken) throw new Error('MCP push token or Ampache API token is missing.');
 
-		await this.LogManifestDiagnostics();
 		let registration = await this.GetRegistration();
 		const permission = await Notification.requestPermission();
-		debug('Notification permission result.', { permission });
 		if(permission !== 'granted') throw new Error('Notification permission was not granted.');
 
 		const publicKey = await this.GetPublicKey();
 		const applicationServerKey = base64urlToUint8Array(publicKey);
-		debug('Converted VAPID public key.', {
-			publicKeyLength: publicKey.length,
-			applicationServerKeyLength: applicationServerKey.byteLength
-		});
 		let subscription = await registration.pushManager.getSubscription();
-		debug('Existing push subscription.', {
-			found: Boolean(subscription),
-			endpoint: subscription?.endpoint,
-			keyLength: subscription?.options?.applicationServerKey?.byteLength
-		});
 		const currentKey = uint8ArrayToBase64url(subscription?.options?.applicationServerKey);
 		if(subscription && currentKey && currentKey !== publicKey) {
-			debug('Existing push subscription uses a different VAPID key. Unsubscribing before resubscribe.', {
-				currentKeyLength: currentKey.length,
-				newKeyLength: publicKey.length
-			});
 			await subscription.unsubscribe();
 			subscription = null;
 		}
 
 		if(!subscription) {
 			try {
-				subscription = await this.Subscribe(registration, applicationServerKey);
+				subscription = await registration.pushManager.subscribe({
+					userVisibleOnly: true,
+					applicationServerKey
+				});
 			} catch (error) {
 				if(!isPushServiceAbort(error)) throw error;
-				debug('Retrying push subscription after push service AbortError by refreshing service worker registration and using an exact ArrayBuffer key.');
 				registration = await this.GetFreshRegistration();
 				try {
-					subscription = await this.Subscribe(registration, toExactArrayBuffer(applicationServerKey), 'after-service-worker-refresh');
+					subscription = await registration.pushManager.subscribe({
+						userVisibleOnly: true,
+						applicationServerKey: toExactArrayBuffer(applicationServerKey)
+					});
 				} catch (retryError) {
 					if(isPushServiceAbort(retryError)) throw pushServiceError();
 					throw retryError;
@@ -270,10 +123,6 @@ export class ApiPushNotifications {
 			}
 		}
 
-		debug('Saving push subscription to MCP.', {
-			url: `${this.GetMcpBaseUrl()}/push/subscribe`,
-			endpoint: subscription.endpoint
-		});
 		const response = await fetch(`${this.GetMcpBaseUrl()}/push/subscribe`, {
 			method: 'POST',
 			headers: {
@@ -283,15 +132,8 @@ export class ApiPushNotifications {
 			body: JSON.stringify(subscription)
 		});
 
-		debug('MCP subscribe response.', {
-			ok: response.ok,
-			status: response.status,
-			statusText: response.statusText
-		});
 		if(!response.ok) throw new Error('Unable to save the push subscription.');
-		const result = await response.json();
-		debug('Enable finished.', result);
-		return result;
+		return response.json();
 	}
 
 	async Disable() {

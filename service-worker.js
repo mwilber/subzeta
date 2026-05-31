@@ -6,11 +6,12 @@
  * to build out your own caching strategy and other PWA features.
  */
 
-let CACHE_VERSION = '0.26';
+let CACHE_VERSION = '0.27';
 let MEDIA_CACHE_VERSION = '0.14';
 let CACHE_STATIC_NAME = 'static_v'+CACHE_VERSION;
 let CACHE_DYNAMIC_NAME = 'dynamic_v'+CACHE_VERSION;
 let CACHE_MEDIA_NAME = 'media_v'+MEDIA_CACHE_VERSION;
+let AI_QUEUE_URL = '/?playlist=AI%20Queue';
 let cacheFirst = ['getCoverArt.view', 'download.view'];
 let precacheUrls = [
 	'/',
@@ -180,6 +181,17 @@ async function NetworkFirst(request, cacheName){
 	}
 }
 
+function GetNotificationClickUrl(value){
+	if(!value) return new URL(AI_QUEUE_URL, self.location.origin).href;
+
+	const url = new URL(value, self.location.origin);
+	if(url.origin !== self.location.origin) {
+		return new URL(AI_QUEUE_URL, self.location.origin).href;
+	}
+
+	return url.href;
+}
+
 self.addEventListener('install', function(event){
 	console.log('[SW] installing...');
 	event.waitUntil(
@@ -272,7 +284,7 @@ self.addEventListener('push', function(event){
 		icon: payload.icon || '/assets/icons/icon-192x192.png',
 		badge: payload.badge || '/assets/icons/icon-96x96.png',
 		data: {
-			url: payload.url || '/?playlist=AI%20Queue',
+			url: payload.url || AI_QUEUE_URL,
 			...(payload.data || {})
 		}
 	};
@@ -282,7 +294,7 @@ self.addEventListener('push', function(event){
 
 self.addEventListener('notificationclick', function(event){
 	event.notification.close();
-	const targetUrl = new URL(event.notification.data?.url || '/?playlist=AI%20Queue', self.location.origin).href;
+	const targetUrl = GetNotificationClickUrl(event.notification.data?.url);
 
 	event.waitUntil(
 		self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(clientList){

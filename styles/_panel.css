@@ -3,6 +3,7 @@
 	border: none;
 	overflow-x: hidden;
 	overflow-y: auto;
+	background: var(--theme-bg);
 }
 
 .active {
@@ -11,6 +12,10 @@
 
 ul li button span {
 	float: right;
+}
+
+ul li button:hover {
+	background: var(--theme-color-bg);
 }
 
 
@@ -39,10 +44,10 @@ ul li button span {
 .search #search-submit {
     padding: 1em 1.5em;
 	background: var(--accent-color-md);
-	color: var(--theme-color-lt);
+	color: var(--theme-color-dk);
 	text-transform: uppercase;
 	border: solid 1px var(--theme-color-md);
-	border-radius: 0;
+	border-radius: var(--control-radius);
 }
 
 .search h2.song-group {
@@ -62,15 +67,15 @@ ul li button span {
     padding: 0.5em 1em;
     white-space: nowrap;
 	background: var(--accent-color-md);
-	color: var(--theme-color-lt);
+	color: var(--theme-color-dk);
 	text-transform: uppercase;
 	border: solid 1px var(--theme-color-md);
-	border-radius: 0;
+	border-radius: var(--control-radius);
 }
 
 .playlists ul li button span {
 	font-style: oblique;
-	color: var(--theme-color-md);
+	color: var(--theme-text-muted);
 }
 
 .queue navigation button {
@@ -78,17 +83,21 @@ ul li button span {
 	padding: 0.5em 1em;
 	background: transparent;
 	border: none;
+	color: #ffffff;
+	fill: #ffffff;
 }
 
 .queue navigation button svg {
 	height: 25px;
+	fill: currentColor;
+	stroke: currentColor;
 }
 
 .queue ul li button svg {
 	height: 1.5em;
 	width: 1.5em;
-	fill: var(--theme-color-md);
-	stroke: var(--theme-color-md);
+	fill: var(--accent-color-signal);
+	stroke: var(--accent-color-signal);
 	transform: rotate(45deg);
 }
 
@@ -100,6 +109,7 @@ ul li button span {
 .settings h2 {
 	text-align: center;
 	margin-top: 1em;
+	color: var(--theme-color-dk);
 }
 
 .settings form {
@@ -113,6 +123,31 @@ ul li button span {
 .settings h3 {
 	margin: 0.25em 0 -0.25em;
 	font-size: 1em;
+	color: var(--theme-color-dk);
+}
+
+.theme-select {
+	display: grid;
+	grid-template-columns: 1fr;
+	gap: 0.5em;
+	padding: 1em;
+	background: var(--theme-color-lt);
+	border: solid 2px var(--theme-outline);
+	border-radius: var(--panel-radius);
+	clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+}
+
+.theme-select span {
+	color: var(--theme-text-muted);
+	font-size: 0.85em;
+	font-weight: 700;
+	text-transform: uppercase;
+}
+
+.theme-select select {
+	width: 100%;
+	padding: 0.85em 1em;
+	font: inherit;
 }
 
 .settings form input {
@@ -121,10 +156,10 @@ ul li button span {
 
 .settings form input[type="submit"] {
 	background: var(--accent-color-md);
-	color: var(--theme-color-lt);
+	color: var(--theme-color-dk);
 	text-transform: uppercase;
 	border: solid 1px var(--theme-color-md);
-	border-radius: 0;
+	border-radius: var(--control-radius);
 }
 
 .notification-actions {
@@ -136,10 +171,10 @@ ul li button span {
 	flex: 1 1 0;
 	width: 100%;
 	padding: 1em;
-	color: var(--theme-color-lt);
+	color: var(--theme-color-dk);
 	text-transform: uppercase;
 	border: solid 1px var(--theme-color-md);
-	border-radius: 0;
+	border-radius: var(--control-radius);
 }
 
 .notification-actions button[hidden] {
@@ -157,10 +192,10 @@ ul li button span {
 .settings-actions button {
 	width: 100%;
 	padding: 1em 1.5em;
-	color: var(--theme-color-lt);
+	color: var(--theme-color-dk);
 	text-transform: uppercase;
 	border: solid 1px var(--theme-color-md);
-	border-radius: 0;
+	border-radius: var(--control-radius);
 }
 
 .settings .push-enable,
@@ -170,12 +205,13 @@ ul li button span {
 
 .settings .push-disable,
 .settings .update-sw {
-	background: #732626;
+	background: var(--danger-color);
+	color: #ffffff;
 }
 
 .push-status {
 	margin: 0;
-	color: var(--theme-color-md);
+	color: var(--theme-text-muted);
 	font-size: 0.9em;
 }
 
@@ -202,14 +238,15 @@ ul li button span {
 	width: 100%;
 	padding: 1em 1.5em;
 	background: var(--accent-color-md);
-	color: var(--theme-color-lt);
+	color: var(--theme-color-dk);
 	text-transform: uppercase;
 	border: solid 1px var(--theme-color-md);
-	border-radius: 0;
+	border-radius: var(--control-radius);
 }
 
 .selma-mic.is-listening {
-	background: #732626;
+	background: var(--danger-color);
+	color: #ffffff;
 }
 
 .selma-input {
@@ -234,13 +271,13 @@ ul li button span {
 	margin-top: 0.75em;
 	padding: 1em 1.5em;
 	background: var(--accent-color-md);
-	color: var(--theme-color-lt);
+	color: var(--theme-color-dk);
 	text-transform: uppercase;
 	border: solid 1px var(--theme-color-md);
-	border-radius: 0;
+	border-radius: var(--control-radius);
 }
 
 .selma-input p {
 	margin: 0.75em 0 0;
-	color: var(--theme-color-md);
+	color: var(--theme-text-muted);
 }

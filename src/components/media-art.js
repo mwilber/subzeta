@@ -4,7 +4,8 @@ const HandleImg = function (el) {
 	//console.log("*** image loaded", el);
 	if (!el || !ColorThief) return;
 
-	const {style} = document.documentElement;
+	const colorTarget = document.querySelector('.wrapper') || document.documentElement;
+	const {style} = colorTarget;
 	const colorThief = new ColorThief();
 	const color = colorThief.getColor(el);
 	const colorFg = BlackOrWhite(color[0], color[1], color[2]);

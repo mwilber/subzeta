@@ -4,6 +4,8 @@
     grid-template-rows: 1fr;
 	height: 100%;
 	background: var(--player-color-bg);
+	border-top: solid 3px var(--theme-outline);
+	box-shadow: inset 0 0 0 2px var(--theme-color-md);
 }
 
 .media-player button {
@@ -24,6 +26,7 @@
       rgba(255,255,255,0.1) 0 calc(var(--pattern-size) / 2),
       rgba(0,0,0,0.2) 0 var(--pattern-size)
     );
+	border-right: solid 2px var(--theme-outline);
 }
 
 .media-player .button-fullscreen svg {
@@ -159,6 +162,8 @@
 
 .media-player .media-player-buttons button svg {
 	fill-opacity: 0.65;
+	fill: #ffffff;
+	stroke: #ffffff;
 }
 
 .media-player .media-player-buttons .progress-container {
@@ -168,6 +173,7 @@
 	position: relative;
 	max-height: 140px;
     margin: auto;
+	background: radial-gradient(circle, #ffffff 0 36%, transparent 37%);
 	/* aspect-ratio: 1; */
 }
 
@@ -193,7 +199,7 @@
 
 .media-player .media-player-buttons .progress-container .progress-bar .circle, 
 .media-player .media-player-buttons .progress-container .progress-bar .route {
-	stroke: black;
+	stroke: rgba(255,255,255,0.45);
 	fill: none;
 	stroke-width: 2px;
 	stroke-linecap: round;
@@ -203,7 +209,7 @@
 
 .media-player .media-player-buttons .progress-container .progress-bar .circle { 
 	stroke-opacity: 0.9;
-	stroke: white !important;
+	stroke: #ffffff !important;
 }
 
 .media-player .media-player-buttons button#media-button-play,
@@ -228,6 +234,8 @@
 .media-player .media-player-buttons button #icon-pause {
 	width: 60%;
 	height: 60%;
+	fill: var(--theme-outline);
+	stroke: var(--theme-outline);
 }
 
 .media-player .media-player-buttons button #icon-previous,

@@ -9,13 +9,27 @@ export default (state, cPush) => html`
 			const inpSelmaBaseUrl = document.getElementById("selma-base-url");
 			const inpSelmaApiToken = document.getElementById("selma-api-token");
 			const inpMcpPushToken = document.getElementById("mcp-push-token");
+			const inpTheme = document.getElementById("theme-selector");
 			if(inpServer) state.settings.server = inpServer.value;
 			if(inpApiKey) state.settings.apiKey = inpApiKey.value;
 			if(inpSelmaBaseUrl) state.settings.selmaBaseUrl = inpSelmaBaseUrl.value;
 			if(inpSelmaApiToken) state.settings.selmaApiToken = inpSelmaApiToken.value;
 			if(inpMcpPushToken) state.settings.mcpPushToken = inpMcpPushToken.value;
+			if(inpTheme) state.settings.theme = inpTheme.value;
 			cPush.RefreshStatus();
 		}}">
+		<h3>Theme</h3>
+		<label class="theme-select" for="theme-selector">
+			<span>Interface style</span>
+			<select
+				id="theme-selector"
+				.value="${() => state.settings.theme || 'signal-night'}"
+				@change="${(e) => state.settings.theme = e.target.value}"
+			>
+				<option value="signal-night">Signal Night</option>
+				<option value="disc-deck">Disc Deck</option>
+			</select>
+		</label>
 		<h3>Ampache</h3>
 		<input id="login-server" type="text" placeholder="Server" .value="${() => state.settings.server}" />
 		<input id="login-api-key" type="password" placeholder="API key / access token" .value="${() => state.settings.apiKey}" />

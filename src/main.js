@@ -80,7 +80,8 @@ let defaultState = {
 		apiKey: "",
 		selmaBaseUrl: "",
 		selmaApiToken: "",
-		mcpPushToken: ""
+		mcpPushToken: "",
+		theme: "signal-night"
 	},
 	push: {
 		enabled: false,
@@ -105,7 +106,8 @@ if(localStorage) {
 			apiKey: "",
 			selmaBaseUrl: "",
 			selmaApiToken: "",
-			mcpPushToken: ""
+			mcpPushToken: "",
+			theme: "signal-night"
 		};
 	}
 
@@ -115,13 +117,15 @@ if(localStorage) {
 			apiKey: "",
 			selmaBaseUrl: defaultState.settings?.selmaBaseUrl || "",
 			selmaApiToken: defaultState.settings?.selmaApiToken || "",
-			mcpPushToken: defaultState.settings?.mcpPushToken || ""
+			mcpPushToken: defaultState.settings?.mcpPushToken || "",
+			theme: defaultState.settings?.theme || "signal-night"
 		};
 	}
 
 	defaultState.settings.selmaBaseUrl = defaultState.settings.selmaBaseUrl || "";
 	defaultState.settings.selmaApiToken = defaultState.settings.selmaApiToken || "";
 	defaultState.settings.mcpPushToken = defaultState.settings.mcpPushToken || "";
+	defaultState.settings.theme = defaultState.settings.theme || "signal-night";
 	defaultState.push = {
 		enabled: false,
 		supported: false,
@@ -233,6 +237,7 @@ const wrapperClass = () => {
 	let className = 'wrapper';
 	className += state.fullscreen ? ' fullscreen' : '';
 	className += state.playing ? ' playing' : '';
+	className += ` theme-${state.settings.theme || 'signal-night'}`;
 	return className;
 }
 

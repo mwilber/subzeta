@@ -1,27 +1,30 @@
 navigation {
 	display: flex;
 	width: 100%;
+	background: var(--theme-outline);
+	border-bottom: solid 2px var(--theme-outline);
 }
 
 navigation button {
 	flex: 1;
 	background: var(--theme-color-lt);
 	fill: var(--theme-color-dk);
-	border: solid 1px var(--theme-color-md);
-	border-radius: none;
+	border: solid 1px var(--theme-outline);
+	border-radius: 0;
 
 	border-top-color: var(--theme-color-lt);
 	border-left-color: var(--theme-color-lt);
-	border-bottom-color: var(--theme-color-dk);
+	border-bottom-color: var(--theme-outline);
 
 }
 
 navigation button[disabled] {
 	background: var(--accent-color-md);
-	fill: var(--theme-color-lt);
+	fill: var(--theme-color-dk);
 
-	border-top-color: var(--theme-color-dk);
-	border-left-color: var(--theme-color-dk);
+	border-top-color: var(--theme-outline);
+	border-left-color: var(--theme-outline);
+	box-shadow: inset 0 -4px 0 var(--accent-color-signal);
 }
 
 navigation button svg {

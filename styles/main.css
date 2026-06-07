@@ -5,15 +5,72 @@
 @import url(_mediaplayer.css);
 
 :root {
-  --player-color-bg: #999;
-  --player-color-fg: #000;
+  --player-color-bg: #101119;
+  --player-color-fg: #d8d8e0;
+  --player-control-bg: #ff4b12;
+  --player-progress-color: #12e0d0;
 
-  --theme-bg: #ffffff;
-  --theme-fg: #000000;
-	--theme-color-lt: #f4f4f9;
-  --theme-color-md: #929299;
-  --theme-color-dk: #292933;
+  --theme-bg: #08090d;
+  --theme-fg: #d8d8e0;
+  --theme-color-bg: #101119;
+  --theme-color-lt: #191b26;
+  --theme-color-md: #343746;
+  --theme-color-dk: #d8d8e0;
+  --theme-text-muted: #8f929d;
+  --theme-outline: #050506;
+  --theme-input-bg: #101119;
 
-  --accent-color-lt: #e0e0eb;
-  --accent-color-md: #7bb951;
+  --accent-color-lt: #343746;
+  --accent-color-md: #9d8cff;
+  --accent-color-strong: #ff4b12;
+  --accent-color-signal: #12e0d0;
+  --danger-color: #732626;
+  --panel-radius: 12px;
+  --control-radius: 6px;
+}
+
+.theme-signal-night {
+  --player-color-bg: #101119;
+  --player-color-fg: #d8d8e0;
+  --player-control-bg: #ff4b12;
+  --player-progress-color: #12e0d0;
+
+  --theme-bg: #08090d;
+  --theme-fg: #d8d8e0;
+  --theme-color-bg: #101119;
+  --theme-color-lt: #191b26;
+  --theme-color-md: #343746;
+  --theme-color-dk: #d8d8e0;
+  --theme-text-muted: #8f929d;
+  --theme-outline: #050506;
+  --theme-input-bg: #101119;
+
+  --accent-color-lt: #343746;
+  --accent-color-md: #9d8cff;
+  --accent-color-strong: #ff4b12;
+  --accent-color-signal: #12e0d0;
+  --danger-color: #8a2d2d;
+}
+
+.theme-disc-deck {
+  --player-color-bg: #f2f3f8;
+  --player-color-fg: #101119;
+  --player-control-bg: #6e46d9;
+  --player-progress-color: #ff4b12;
+
+  --theme-bg: #eceef4;
+  --theme-fg: #101119;
+  --theme-color-bg: #d8d8e0;
+  --theme-color-lt: #ffffff;
+  --theme-color-md: #7c8192;
+  --theme-color-dk: #101119;
+  --theme-text-muted: #555c6f;
+  --theme-outline: #050506;
+  --theme-input-bg: #ffffff;
+
+  --accent-color-lt: #cfd4e2;
+  --accent-color-md: #12e0d0;
+  --accent-color-strong: #ff4b12;
+  --accent-color-signal: #6e46d9;
+  --danger-color: #a53420;
 }

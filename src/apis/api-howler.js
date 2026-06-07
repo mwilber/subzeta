@@ -23,6 +23,7 @@ export class ApiHowler {
 		if(selectedSong.src && selectedSong.src[0]) {
 			console.log("found song at index", this.state.mediaselection);
 			this.meta = {
+				queueId: selectedSong.id,
 				title: selectedSong.title,
 				artist: selectedSong.artist,
 				artistId: selectedSong.artistId,
@@ -53,6 +54,7 @@ export class ApiHowler {
 				// Update the media session api
 				this.mediaSession.SetState(1);
 				this.state.playing = true;
+				this.state.playingQueueId = this.meta.queueId || null;
 				// Start upating the progress of the track.
 				requestAnimationFrame(this.Step.bind(this));
 			},

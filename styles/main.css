@@ -9,6 +9,9 @@
   --player-color-fg: #d8d8e0;
   --player-control-bg: #ff4b12;
   --player-progress-color: #12e0d0;
+  --queue-playing-bg: #9d8cff;
+  --queue-playing-fg: #050506;
+  --queue-playing-icon: #050506;
 
   --theme-bg: #08090d;
   --theme-fg: #d8d8e0;
@@ -34,6 +37,9 @@
   --player-color-fg: #d8d8e0;
   --player-control-bg: #ff4b12;
   --player-progress-color: #12e0d0;
+  --queue-playing-bg: #9d8cff;
+  --queue-playing-fg: #050506;
+  --queue-playing-icon: #050506;
 
   --theme-bg: #08090d;
   --theme-fg: #d8d8e0;
@@ -57,6 +63,9 @@
   --player-color-fg: #101119;
   --player-control-bg: #6e46d9;
   --player-progress-color: #ff4b12;
+  --queue-playing-bg: #ff4b12;
+  --queue-playing-fg: #ffffff;
+  --queue-playing-icon: #ffffff;
 
   --theme-bg: #eceef4;
   --theme-fg: #101119;

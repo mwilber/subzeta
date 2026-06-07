@@ -1,6 +1,8 @@
 import { html } from '../vendor/@arrow-js/core/index.min.mjs';
 import {pin, cache, shuffle, spinner} from '../icons.js';
 
+let scrolledTrackId = null;
+
 const GetIcon = (status) => {
 	// TODO: Investigate this further.
 	// ArrowJS doesn't appear to detect a change in the html when only the svg is swapped out.
@@ -15,16 +17,36 @@ const GetIcon = (status) => {
 	}
 }
 
-const RenderListing = (data, queue) => {
+const ScrollHighlightedTrack = (trackId, activePanel, fullscreen) => {
+	if (!trackId || activePanel !== 'queue' || fullscreen || scrolledTrackId === trackId) return;
+	scrolledTrackId = trackId;
+
+	setTimeout(() => {
+		const track = Array.from(document.querySelectorAll('.queue-track')).find(
+			item => item.dataset.queueTrackId === String(trackId)
+		);
+		if (!track) return;
+		track.scrollIntoView({
+			block: 'center',
+			inline: 'nearest',
+			behavior: 'smooth'
+		});
+	}, 0);
+}
+
+const RenderListing = (data, playingQueueId, queue) => {
 	let songs = `
 		<li><button disabled>No songs in queue.</button></li>
 	`;
 	if(data.songs && data.songs.length) songs = data.songs.map(
 		(song) => {
+			const isPlaying = String(song.id) === String(playingQueueId);
 			return html`
 				<li>
 					<button 
+						class="${isPlaying ? 'queue-track is-playing' : 'queue-track'}"
 						@click="${() => queue.PlayId(song.id)}"
+						data-queue-track-id="${song.id}"
 						data-src="${song.src}"
 						data-artistid="${song.artistId}"
 						data-albumid="${song.albumId}"
@@ -41,7 +63,13 @@ const RenderListing = (data, queue) => {
 	return songs;
 }
 
-export default (data, queue) => {;
+export default (data, playingQueueId, activePanel, fullscreen, queue) => {;
+	const activeTrackExists = Boolean(data.songs?.some(
+		song => String(song.id) === String(playingQueueId)
+	));
+	const activeTrackId = activeTrackExists ? playingQueueId : null;
+	if (!activeTrackId) scrolledTrackId = null;
+	ScrollHighlightedTrack(activeTrackId, activePanel, fullscreen);
 
 
 	return html`
@@ -54,7 +82,7 @@ export default (data, queue) => {;
 			</button>
 		</navigation>
 		<ul>
-			${() => RenderListing(data, queue)}
+			${() => RenderListing(data, activeTrackId, queue)}
 		</ul>
 	`;
 }

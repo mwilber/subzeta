@@ -101,6 +101,22 @@ ul li button:hover {
 	transform: rotate(45deg);
 }
 
+.queue ul li button.queue-track.is-playing {
+	background: var(--queue-playing-bg);
+	color: var(--queue-playing-fg);
+	font-weight: 700;
+	box-shadow: inset 0 0 0 2px var(--theme-outline);
+}
+
+.queue ul li button.queue-track.is-playing span {
+	color: var(--queue-playing-icon);
+}
+
+.queue ul li button.queue-track.is-playing svg {
+	fill: var(--queue-playing-icon);
+	stroke: var(--queue-playing-icon);
+}
+
 .settings.active {
 	display: flex;
     flex-direction: column;

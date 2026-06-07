@@ -64,6 +64,7 @@ let defaultState = {
 	mediaqueue: {},
 	mediadisplay: {},
 	mediaselection: null,
+	playingQueueId: null,
 	volume: 100,
 	activepanel: "playlists",
 	fullscreen: false,
@@ -143,6 +144,7 @@ if(localStorage) {
 
 	// Reset values
 	defaultState.playing = false;
+	defaultState.playingQueueId = null;
 }
 const state = reactive(defaultState);
 
@@ -260,6 +262,9 @@ html`
 		<div class="${() => panelClass('queue')}">
 			${() => mediaQueue(
 				state.mediaqueue,
+				state.playingQueueId,
+				state.activepanel,
+				state.fullscreen,
 				cQueue
 			)}
 		</div>

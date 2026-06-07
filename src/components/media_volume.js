@@ -7,6 +7,6 @@ export default (data, audioApi) =>
 			type="range" 
 			min="0" 
 			max="100" 
-			value="${data || 100}"
+			.value="${() => data || 100}"
 			@change="${(e) => audioApi.Volume(e.target.value)}">
 	`;

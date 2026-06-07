@@ -13,7 +13,7 @@ export class ControllerSearch {
 		
 		//console.log("Searching for", input.value);
 		
-		this.listing = await this.api.GetSearch2(input.value);
+		this.listing = await this.api.GetSearch3(input.value);
 		//console.log("search result: ", this.listing);
 		if(!this.listing) return;
 		this.state.searchresults = this.listing;

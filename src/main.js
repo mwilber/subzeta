@@ -1,12 +1,16 @@
 import { reactive, watch, html } from './vendor/@arrow-js/core/index.min.mjs';
 
 import { ApiSubsonic } from './apis/api-subsonic.js';
+import { ApiSelma } from './apis/api-selma.js';
 import { ApiHowler } from './apis/api-howler.js';
 import { ApiMediaSession } from './apis/api-mediasession.js';
+import { ApiPushNotifications } from './apis/api-push-notifications.js';
 
 import { ControllerQueue } from './controllers/controller-queue.js';
 import { ControllerCache } from './controllers/controller-cache.js';
 import { ControllerSearch } from './controllers/controller-search.js';
+import { ControllerSelma } from './controllers/controller-selma.js';
+import { ControllerPushNotifications } from './controllers/controller-push-notifications.js';
 
 import mediaPlayer from './components/media-player.js';
 import mediaQueue from './components/media-queue.js';
@@ -18,16 +22,30 @@ import mediaVolume from './components/media_volume.js';
 import settings from './components/settings.js';
 import playLists from './components/playlists.js';
 import search from './components/search.js';
+import selma from './components/selma.js';
 import navButton from './components/nav-button.js';
+import * as icons from './icons.js';
 
 const disableSW = false;
+const legacyDefaultServer = "https://ampache.greenzeta.com";
 
 window.swUpdate = () => {
 	alert("Service Worker is not registered.")
 }
+if (disableSW && 'serviceWorker' in navigator) {
+	window.addEventListener('load', async () => {
+		const registrations = await navigator.serviceWorker.getRegistrations();
+		await Promise.all(registrations.map(registration => registration.unregister()));
+
+		if ('caches' in window) {
+			const cacheNames = await caches.keys();
+			await Promise.all(cacheNames.map(cacheName => caches.delete(cacheName)));
+		}
+	});
+}
 if (!disableSW && 'serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('../service-worker.js').then(registration => {
+        navigator.serviceWorker.register('/service-worker.js').then(registration => {
             console.log('SW registered: ', registration);
 			window.swUpdate = () => {
 				registration.update();
@@ -46,14 +64,32 @@ let defaultState = {
 	mediaqueue: {},
 	mediadisplay: {},
 	mediaselection: null,
+	playingQueueId: null,
 	volume: 100,
 	activepanel: "playlists",
 	fullscreen: false,
 	playing: false,
+	selma: {
+		revealed: false,
+		text: "",
+		status: "Tap Dictate and speak. The message sends automatically when dictation ends.",
+		listening: false,
+		sending: false
+	},
 	settings: {
-		server: "https://ampache.greenzeta.com",
-		user: "subzeta",
-		pass: "gzdemo"
+		server: "",
+		apiKey: "",
+		selmaBaseUrl: "",
+		selmaApiToken: "",
+		mcpPushToken: "",
+		theme: "signal-night"
+	},
+	push: {
+		enabled: false,
+		supported: false,
+		permission: 'default',
+		status: 'idle',
+		message: ''
 	}
 };
 // Retrieve the state from localStorage, if available.
@@ -62,8 +98,53 @@ if(localStorage) {
 	if(savedState && savedState !== null)
 		defaultState = JSON.parse(savedState);
 
+	if (
+		defaultState.settings?.server === legacyDefaultServer &&
+		(defaultState.settings?.apiKey || defaultState.settings?.user || defaultState.settings?.pass)
+	) {
+		defaultState.settings = {
+			server: "",
+			apiKey: "",
+			selmaBaseUrl: "",
+			selmaApiToken: "",
+			mcpPushToken: "",
+			theme: "signal-night"
+		};
+	}
+
+	if (!defaultState.settings?.apiKey) {
+		defaultState.settings = {
+			server: defaultState.settings?.server || "",
+			apiKey: "",
+			selmaBaseUrl: defaultState.settings?.selmaBaseUrl || "",
+			selmaApiToken: defaultState.settings?.selmaApiToken || "",
+			mcpPushToken: defaultState.settings?.mcpPushToken || "",
+			theme: defaultState.settings?.theme || "signal-night"
+		};
+	}
+
+	defaultState.settings.selmaBaseUrl = defaultState.settings.selmaBaseUrl || "";
+	defaultState.settings.selmaApiToken = defaultState.settings.selmaApiToken || "";
+	defaultState.settings.mcpPushToken = defaultState.settings.mcpPushToken || "";
+	defaultState.settings.theme = defaultState.settings.theme || "signal-night";
+	defaultState.push = {
+		enabled: false,
+		supported: false,
+		permission: 'default',
+		status: 'idle',
+		message: ''
+	};
+	defaultState.selma = {
+		revealed: false,
+		text: "",
+		status: "Tap Dictate and speak. The message sends automatically when dictation ends.",
+		listening: false,
+		sending: false
+	};
+
 	// Reset values
 	defaultState.playing = false;
+	defaultState.playingQueueId = null;
 }
 const state = reactive(defaultState);
 
@@ -74,30 +155,51 @@ watch(() => {
 });
 
 const apiSubsonic = new ApiSubsonic(state.settings);
+const apiSelma = new ApiSelma(state.settings);
 const apiMediaSession = new ApiMediaSession();
+const apiPush = new ApiPushNotifications(state.settings);
 const apiHowler = new ApiHowler(state, apiMediaSession);
 
-const cCache = new ControllerCache('media_v0.12', state);
+const cCache = new ControllerCache('media_v0.14', state);
 const cQueue = new ControllerQueue(state, apiHowler, cCache);
 const cSearch = new ControllerSearch(state, apiSubsonic);
+const cSelma = new ControllerSelma(state, apiSelma);
+const cPush = new ControllerPushNotifications(state, apiPush);
 
 apiMediaSession.Init(apiHowler, cQueue);
+cQueue.RefreshCacheStatus();
+cPush.RefreshStatus();
 
-if(state.settings.server && state.settings.user && state.settings.pass) {
-	state.playlists = await apiSubsonic.GetPlaylists();
-	console.log("playlists", state.playlists);
-} else {
-	state.activepanel = "settings";
-}
-
-const LoadPlaylistById = async (id) => {
+const LoadPlaylistById = async (id, autoplay) => {
 	if(!id) return;
 	
 	//id = "800000013";
 	let playlist = await apiSubsonic.GetPlaylist(id);
-	cQueue.LoadData(playlist);
+	cQueue.LoadData(playlist, autoplay);
 	state.activepanel = 'queue';
-	state.fullscreen = false;
+	state.fullscreen = Boolean(autoplay);
+};
+
+const LoadPlaylistByName = async (name, autoplay) => {
+	const cleanName = String(name || '').trim().toLowerCase();
+	if(!cleanName || !state.playlists?.length) return;
+	const playlist = state.playlists.find(item => String(item.name || '').trim().toLowerCase() === cleanName);
+	if(!playlist) return;
+	await LoadPlaylistById(playlist.id, autoplay);
+};
+
+const LoadRoutePlaylist = async () => {
+	const params = new URLSearchParams(window.location.search);
+	const routePlaylist = params.get('playlist');
+	const autoplay = params.get('autoplay') === '1';
+	if(routePlaylist) {
+		await LoadPlaylistByName(routePlaylist, autoplay);
+		return;
+	}
+
+	if(window.location.pathname.replace(/\/+$/, '') === '/ai-queue' || params.has('aiQueue')) {
+		await LoadPlaylistByName('AI Queue', autoplay);
+	}
 };
 
 const LoadAlbumById = async (id, autoplay) => {
@@ -118,6 +220,14 @@ const LoadAlbumsByArtistId = async (id) => {
 	state.fullscreen = false;
 };
 
+if(state.settings.server && state.settings.apiKey) {
+	state.playlists = await apiSubsonic.GetPlaylists();
+	console.log("playlists", state.playlists);
+	await LoadRoutePlaylist();
+} else {
+	state.activepanel = "settings";
+}
+
 
 const panelClass = (panelName) => {
 	let className = 'panel ' + panelName;
@@ -129,6 +239,7 @@ const wrapperClass = () => {
 	let className = 'wrapper';
 	className += state.fullscreen ? ' fullscreen' : '';
 	className += state.playing ? ' playing' : '';
+	className += ` theme-${state.settings.theme || 'signal-night'}`;
 	return className;
 }
 
@@ -138,6 +249,12 @@ html`
 		<navigation>
 			${() => navButton(state, 'search')}
 			${() => navButton(state, 'playlists')}
+			<button
+				aria-label="SELMA dictation"
+				title="SELMA"
+				@click="${() => cSelma.OpenDictation()}"
+				disabled="${() => state.activepanel == 'selma'}"
+			>${icons.selma}</button>
 			${() => navButton(state, 'queue')}
 			${() => navButton(state, 'settings')}
 		</navigation>
@@ -145,6 +262,9 @@ html`
 		<div class="${() => panelClass('queue')}">
 			${() => mediaQueue(
 				state.mediaqueue,
+				state.playingQueueId,
+				state.activepanel,
+				state.fullscreen,
 				cQueue
 			)}
 		</div>
@@ -186,9 +306,17 @@ html`
 			)}
 		</div>
 
+		<div class="${() => panelClass('selma')}">
+			${() => selma(
+				state.selma,
+				cSelma
+			)}
+		</div>
+
 		<div class="${() => panelClass('settings')}">
 			${() => settings(
-				state
+				state,
+				cPush
 			)}
 		</div>
 	</div>

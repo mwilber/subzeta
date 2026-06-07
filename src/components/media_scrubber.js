@@ -7,6 +7,6 @@ export default (data, audioApi) =>
 			type="range" 
 			min="0" 
 			max="100" 
-			value="${data.progress || 0}"
+			.value="${() => data.progress || 0}"
 			@change="${(e) => audioApi.Scrub(e.target.value)}">
 	`;

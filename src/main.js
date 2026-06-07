@@ -170,22 +170,39 @@ apiMediaSession.Init(apiHowler, cQueue);
 cQueue.RefreshCacheStatus();
 cPush.RefreshStatus();
 
-const LoadPlaylistById = async (id, autoplay) => {
-	if(!id) return;
+const ClearRoutePlaylist = () => {
+	const url = new URL(window.location.href);
+	const routePath = url.pathname.replace(/\/+$/, '');
+	const hasRoutePlaylist = url.searchParams.has('playlist') || url.searchParams.has('aiQueue') || routePath === '/ai-queue';
+	if(!hasRoutePlaylist) return;
+
+	url.searchParams.delete('playlist');
+	url.searchParams.delete('aiQueue');
+	url.searchParams.delete('autoplay');
+	if(routePath === '/ai-queue') url.pathname = '/';
+
+	window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+};
+
+const LoadPlaylistById = async (id, autoplay, clearRoute = true) => {
+	if(!id) return false;
 	
 	//id = "800000013";
 	let playlist = await apiSubsonic.GetPlaylist(id);
+	if(!playlist) return false;
+	if(clearRoute) ClearRoutePlaylist();
 	cQueue.LoadData(playlist, autoplay);
 	state.activepanel = 'queue';
 	state.fullscreen = Boolean(autoplay);
+	return true;
 };
 
-const LoadPlaylistByName = async (name, autoplay) => {
+const LoadPlaylistByName = async (name, autoplay, clearRoute = true) => {
 	const cleanName = String(name || '').trim().toLowerCase();
-	if(!cleanName || !state.playlists?.length) return;
+	if(!cleanName || !state.playlists?.length) return false;
 	const playlist = state.playlists.find(item => String(item.name || '').trim().toLowerCase() === cleanName);
-	if(!playlist) return;
-	await LoadPlaylistById(playlist.id, autoplay);
+	if(!playlist) return false;
+	return LoadPlaylistById(playlist.id, autoplay, clearRoute);
 };
 
 const LoadRoutePlaylist = async () => {
@@ -193,12 +210,12 @@ const LoadRoutePlaylist = async () => {
 	const routePlaylist = params.get('playlist');
 	const autoplay = params.get('autoplay') === '1';
 	if(routePlaylist) {
-		await LoadPlaylistByName(routePlaylist, autoplay);
+		if(await LoadPlaylistByName(routePlaylist, autoplay, false)) ClearRoutePlaylist();
 		return;
 	}
 
 	if(window.location.pathname.replace(/\/+$/, '') === '/ai-queue' || params.has('aiQueue')) {
-		await LoadPlaylistByName('AI Queue', autoplay);
+		if(await LoadPlaylistByName('AI Queue', autoplay, false)) ClearRoutePlaylist();
 	}
 };
 

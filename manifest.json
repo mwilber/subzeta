@@ -13,6 +13,7 @@
 	"orientation": "any",
 	"scope": "/",
 	"start_url": "/",
+	"id": "https://subsonic.greenzeta.com/",
 	"icons": [
 		{
 		"src": "/assets/icon-192.png",

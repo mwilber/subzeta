@@ -36,6 +36,7 @@ export default (state, cPush) => html`
 		<h3>SELMA</h3>
 		<input id="selma-base-url" type="text" placeholder="SELMA base URL" .value="${() => state.settings.selmaBaseUrl}" />
 		<input id="selma-api-token" type="password" placeholder="SELMA API token" .value="${() => state.settings.selmaApiToken}" />
+		<input type="submit" class="search" value="Save" />
 		<h3>AI Queue Notifications</h3>
 		<input id="mcp-push-token" type="password" placeholder="MCP push token (defaults to API key)" .value="${() => state.settings.mcpPushToken}" />
 		<div class="notification-actions">
@@ -59,7 +60,6 @@ export default (state, cPush) => html`
 			>Test</button>
 		</div>
 		<p class="push-status">${() => state.push.message}</p>
-		<input type="submit" class="search" value="Save" />
 	</form>
 	<div class="settings-actions">
 		<button class="update-sw" @click="${() => window.swUpdate()}">Update SW</button>

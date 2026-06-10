@@ -173,7 +173,7 @@
 	position: relative;
 	max-height: 140px;
     margin: auto;
-	background: radial-gradient(circle, #ffffff 0 36%, transparent 37%);
+	/* background: radial-gradient(circle, #ffffff 0 36%, transparent 37%); */
 	/* aspect-ratio: 1; */
 }
 
@@ -234,8 +234,8 @@
 .media-player .media-player-buttons button #icon-pause {
 	width: 60%;
 	height: 60%;
-	fill: var(--theme-outline);
-	stroke: var(--theme-outline);
+	/* fill: var(--theme-outline);
+	stroke: var(--theme-outline); */
 }
 
 .media-player .media-player-buttons button #icon-previous,

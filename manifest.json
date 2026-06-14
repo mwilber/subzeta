@@ -3,7 +3,7 @@
 	"short_name": "SubZeta",
 	"categories": ["music", "entertainment"],
 	"description": "Music player compatible with Subsonic servers.",
-	"theme_color": "#7bb951",
+	"theme_color": "#ff4800",
 	"background_color": "#111313",
 	"display": "standalone",
 	"gcm_sender_id": "103953800507",

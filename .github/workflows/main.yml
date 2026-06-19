@@ -26,6 +26,13 @@ jobs:
           set net:timeout 30
           user "${SFTP_USER}" "${SFTP_PASSWORD}"
           mkdir -p /home/greenzeta/staging.greenzeta.com/subsonic/
-          mirror --reverse --verbose --ignore-time --exclude-glob .git* --exclude-glob .DS_Store ./ /home/greenzeta/staging.greenzeta.com/subsonic/
+          mirror --reverse --verbose --ignore-time \
+            --exclude-glob .git* \
+            --exclude-glob .git*/** \
+            --exclude-glob .DS_Store \
+            --exclude-glob **/.DS_Store \
+            --exclude-glob .github/** \
+            --exclude-glob .vscode/** \
+            ./ /home/greenzeta/staging.greenzeta.com/subsonic/
           bye
           EOF

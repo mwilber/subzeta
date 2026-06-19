@@ -162,8 +162,7 @@
 
 .media-player .media-player-buttons button svg {
 	fill-opacity: 0.65;
-	fill: #ffffff;
-	stroke: #ffffff;
+	fill: var(--player-color-fg);
 }
 
 .media-player .media-player-buttons .progress-container {
@@ -199,7 +198,7 @@
 
 .media-player .media-player-buttons .progress-container .progress-bar .circle, 
 .media-player .media-player-buttons .progress-container .progress-bar .route {
-	stroke: rgba(255,255,255,0.45);
+	stroke: var(--player-color-fg);
 	fill: none;
 	stroke-width: 2px;
 	stroke-linecap: round;
@@ -209,7 +208,7 @@
 
 .media-player .media-player-buttons .progress-container .progress-bar .circle { 
 	stroke-opacity: 0.9;
-	stroke: #ffffff !important;
+	stroke: var(--player-color-fg) !important;
 }
 
 .media-player .media-player-buttons button#media-button-play,

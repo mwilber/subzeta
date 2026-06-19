@@ -18,6 +18,12 @@ ul li button:hover {
 	background: var(--theme-color-bg);
 }
 
+ul li button[data-keyboard-selected="true"] {
+	background: var(--theme-color-bg);
+	color: var(--theme-color-dk);
+	box-shadow: inset 0 0 0 3px var(--accent-color-signal);
+}
+
 
 .search #search-form {
 	display: flex;

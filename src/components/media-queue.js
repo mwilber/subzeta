@@ -34,18 +34,20 @@ const ScrollHighlightedTrack = (trackId, activePanel, fullscreen) => {
 	}, 0);
 }
 
-const RenderListing = (data, playingQueueId, queue) => {
+const RenderListing = (data, playingQueueId, keyboardFocus, queue) => {
 	let songs = `
 		<li><button disabled>No songs in queue.</button></li>
 	`;
 	if(data.songs && data.songs.length) songs = data.songs.map(
-		(song) => {
+		(song, index) => {
 			const isPlaying = String(song.id) === String(playingQueueId);
 			return html`
 				<li>
 					<button 
 						class="${isPlaying ? 'queue-track is-playing' : 'queue-track'}"
 						@click="${() => queue.PlayId(song.id)}"
+						data-keyboard-list-item
+						data-keyboard-selected="${() => keyboardFocus?.panel === 'queue' && keyboardFocus?.index === index}"
 						data-queue-track-id="${song.id}"
 						data-src="${song.src}"
 						data-artistid="${song.artistId}"
@@ -63,7 +65,7 @@ const RenderListing = (data, playingQueueId, queue) => {
 	return songs;
 }
 
-export default (data, playingQueueId, activePanel, fullscreen, queue) => {;
+export default (data, playingQueueId, activePanel, fullscreen, keyboardFocus, queue) => {;
 	const activeTrackExists = Boolean(data.songs?.some(
 		song => String(song.id) === String(playingQueueId)
 	));
@@ -82,7 +84,7 @@ export default (data, playingQueueId, activePanel, fullscreen, queue) => {;
 			</button>
 		</navigation>
 		<ul>
-			${() => RenderListing(data, activeTrackId, queue)}
+			${() => RenderListing(data, activeTrackId, keyboardFocus, queue)}
 		</ul>
 	`;
 }

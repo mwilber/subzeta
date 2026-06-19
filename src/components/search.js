@@ -1,17 +1,22 @@
 import { html } from '../vendor/@arrow-js/core/index.min.mjs';
 
-const RenderResults = (results, queue, loadAlbum, loadArtist) => {
+const RenderResults = (results, keyboardFocus, queue, loadAlbum, loadArtist) => {
 	let resultsOutput = [];
+	const artistCount = results.artists?.length || 0;
+	const albumCount = results.albums?.length || 0;
+	const songOffset = artistCount + albumCount;
 
 	if(results.artists && results.artists.length)
 	resultsOutput.push(html`
 		<h2>Artists</h2>
 		<ul>
-			${() => results.artists.map((artist) => {
+			${() => results.artists.map((artist, index) => {
 				return html`
 					<li>
 						<button 
 							@click="${() => loadArtist(artist.id)}"
+							data-keyboard-list-item
+							data-keyboard-selected="${() => keyboardFocus?.panel === 'search' && keyboardFocus?.index === index}"
 							data-id="${artist.id}"
 							data-name="${artist.name}"
 						>
@@ -26,11 +31,13 @@ const RenderResults = (results, queue, loadAlbum, loadArtist) => {
 		resultsOutput.push(html`
 			<h2>Albums</h2>
 			<ul>
-				${() => results.albums.map((album) => {
+				${() => results.albums.map((album, index) => {
 					return html`
 						<li>
 							<button 
 								@click="${() => loadAlbum(album.id, true)}"
+								data-keyboard-list-item
+								data-keyboard-selected="${() => keyboardFocus?.panel === 'search' && keyboardFocus?.index === artistCount + index}"
 								data-id="${album.id}"
 								data-name="${album.name}"
 								data-artist="${album.artist}"
@@ -48,7 +55,7 @@ const RenderResults = (results, queue, loadAlbum, loadArtist) => {
 		resultsOutput.push(html`
 			<h2 class="song-group"><span>Songs</span> <button @click="${() => queue.LoadData(results, true)}">Play All</button></h2>			
 			<ul>
-				${() => results.songs.map((song) => {
+				${() => results.songs.map((song, index) => {
 					return html`
 						<li>
 							<button 
@@ -56,6 +63,8 @@ const RenderResults = (results, queue, loadAlbum, loadArtist) => {
 									name: 'Search Results',
 									songs: [song]
 								}, true)}"
+								data-keyboard-list-item
+								data-keyboard-selected="${() => keyboardFocus?.panel === 'search' && keyboardFocus?.index === songOffset + index}"
 								data-src="${song.src}"
 								data-artistid="${song.artistId}"
 								data-albumid="${song.albumId}"
@@ -75,10 +84,10 @@ const RenderResults = (results, queue, loadAlbum, loadArtist) => {
 	return resultsOutput;
 };
 
-export default (results, controller, queue, loadAlbum, loadArtist) => html`
+export default (results, keyboardFocus, controller, queue, loadAlbum, loadArtist) => html`
 	<form id="search-form" @submit="${controller.Search.bind(controller)}">
 		<input id="search-query" type="text" name="query" placeholder="Search" value="" />
 		<input id="search-submit" type="submit" class="search" value="Go" />
 	</form>
-	${()=> RenderResults(results, queue, loadAlbum, loadArtist)}
+	${()=> RenderResults(results, keyboardFocus, queue, loadAlbum, loadArtist)}
 `;

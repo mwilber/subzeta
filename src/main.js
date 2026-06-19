@@ -90,6 +90,10 @@ let defaultState = {
 		permission: 'default',
 		status: 'idle',
 		message: ''
+	},
+	keyboardFocus: {
+		panel: "playlists",
+		index: -1
 	}
 };
 // Retrieve the state from localStorage, if available.
@@ -133,6 +137,10 @@ if(localStorage) {
 		permission: 'default',
 		status: 'idle',
 		message: ''
+	};
+	defaultState.keyboardFocus = {
+		panel: defaultState.activepanel || "playlists",
+		index: -1
 	};
 	defaultState.selma = {
 		revealed: false,
@@ -260,6 +268,116 @@ const wrapperClass = () => {
 	return className;
 }
 
+const keyboardPanels = ['search', 'playlists', 'selma', 'queue', 'settings'];
+
+const IsEditableTarget = (target) => {
+	if(!target) return false;
+	const tagName = target.tagName?.toLowerCase();
+	return target.isContentEditable || ['input', 'select', 'textarea'].includes(tagName);
+};
+
+const SetKeyboardFocus = (panel, index = -1) => {
+	state.keyboardFocus = {panel, index};
+};
+
+const GetKeyboardItems = (panel = state.activepanel) => {
+	return Array.from(document.querySelectorAll(`.panel.${panel}.active [data-keyboard-list-item]:not([disabled])`));
+};
+
+const ScrollKeyboardItemIntoView = (item) => {
+	if(!item) return;
+	item.scrollIntoView({
+		block: 'nearest',
+		inline: 'nearest',
+		behavior: 'smooth'
+	});
+};
+
+const MoveKeyboardFocus = (direction) => {
+	const items = GetKeyboardItems();
+	if(!items.length) {
+		SetKeyboardFocus(state.activepanel, -1);
+		return;
+	}
+
+	const activePanelChanged = state.keyboardFocus?.panel !== state.activepanel;
+	let nextIndex = activePanelChanged ? -1 : parseInt(state.keyboardFocus?.index ?? -1);
+	if(Number.isNaN(nextIndex)) nextIndex = -1;
+
+	if(nextIndex < 0) nextIndex = direction > 0 ? 0 : items.length - 1;
+	else nextIndex = (nextIndex + direction + items.length) % items.length;
+
+	SetKeyboardFocus(state.activepanel, nextIndex);
+	ScrollKeyboardItemIntoView(items[nextIndex]);
+};
+
+const SelectKeyboardFocus = () => {
+	if(state.keyboardFocus?.panel !== state.activepanel) return;
+	const items = GetKeyboardItems();
+	const index = parseInt(state.keyboardFocus?.index ?? -1);
+	if(Number.isNaN(index) || index < 0 || index >= items.length) return;
+	items[index].click();
+};
+
+const RotateKeyboardPanel = () => {
+	const currentIndex = keyboardPanels.indexOf(state.activepanel);
+	const nextPanel = keyboardPanels[(currentIndex + 1) % keyboardPanels.length] || keyboardPanels[0];
+	state.activepanel = nextPanel;
+	state.fullscreen = false;
+
+	setTimeout(() => {
+		const items = GetKeyboardItems(nextPanel);
+		const nextIndex = items.length ? 0 : -1;
+		SetKeyboardFocus(nextPanel, nextIndex);
+		ScrollKeyboardItemIntoView(items[nextIndex]);
+	}, 0);
+};
+
+const ToggleKeyboardPlayback = () => {
+	if(!apiHowler.howl && !state.mediaqueue?.songs?.length) return;
+	if(state.playing) apiHowler.Pause();
+	else apiHowler.Play();
+};
+
+window.addEventListener('keydown', (event) => {
+	if(event.defaultPrevented || event.metaKey || event.ctrlKey || event.altKey) return;
+
+	if(event.key === 'Tab') {
+		event.preventDefault();
+		RotateKeyboardPanel();
+		return;
+	}
+
+	if(IsEditableTarget(event.target)) return;
+
+	switch(event.key) {
+		case ' ':
+			event.preventDefault();
+			ToggleKeyboardPlayback();
+			break;
+		case 'ArrowLeft':
+			event.preventDefault();
+			cQueue.PlayPrevious();
+			break;
+		case 'ArrowRight':
+			event.preventDefault();
+			cQueue.PlayNext();
+			break;
+		case 'ArrowUp':
+			event.preventDefault();
+			MoveKeyboardFocus(-1);
+			break;
+		case 'ArrowDown':
+			event.preventDefault();
+			MoveKeyboardFocus(1);
+			break;
+		case 'Enter':
+			event.preventDefault();
+			SelectKeyboardFocus();
+			break;
+	}
+});
+
 
 html`
 	<div class="${() => wrapperClass()}">
@@ -282,6 +400,7 @@ html`
 				state.playingQueueId,
 				state.activepanel,
 				state.fullscreen,
+				state.keyboardFocus,
 				cQueue
 			)}
 		</div>
@@ -309,6 +428,7 @@ html`
 		<div class="${() => panelClass('search')}">
 			${() => search(
 				state.searchresults,
+				state.keyboardFocus,
 				cSearch,
 				cQueue,
 				LoadAlbumById,
@@ -319,6 +439,7 @@ html`
 		<div class="${() => panelClass('playlists')}">
 			${() => playLists(
 				state.playlists,
+				state.keyboardFocus,
 				LoadPlaylistById,
 			)}
 		</div>

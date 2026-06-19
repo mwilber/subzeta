@@ -30,6 +30,7 @@ export class ControllerQueue {
 
 	_setMediaSelection(index) {
 		console.log("set at index", index);
+		if(!this.state.mediaqueue?.songs?.length) return;
 		if(index >= 0 && index <= (this.state.mediaqueue.songs.length-1)) {
 			console.log("setting media selection");
 			this.state.mediaselection = index;
@@ -98,6 +99,7 @@ export class ControllerQueue {
 
 	PlayId(id) {
 		if(!id) return;
+		if(!this.state.mediaqueue?.songs?.length) return;
 
 		const songIndex = this.state.mediaqueue.songs.findIndex(song => song.id === id);
 		if(songIndex >= 0) {
@@ -112,6 +114,7 @@ export class ControllerQueue {
 	
 	PlayNext() {
 		let {mediaselection, mediaqueue} = this.state;
+		if(!mediaqueue?.songs?.length) return;
 		if(mediaselection === null || mediaselection >= (mediaqueue.songs.length-1)) 
 			this._setMediaSelection(0);
 		else 
@@ -120,6 +123,7 @@ export class ControllerQueue {
 
 	PlayPrevious() {
 		let {mediaselection, mediaqueue} = this.state;
+		if(!mediaqueue?.songs?.length) return;
 		if(mediaselection === null || mediaselection === 0) 
 			this._setMediaSelection(mediaqueue.songs.length-1);
 		else 

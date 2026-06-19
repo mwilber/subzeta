@@ -1,15 +1,16 @@
 import { html } from '../vendor/@arrow-js/core/index.min.mjs';
 
-export default (data, loadPl) => {
+export default (data, keyboardFocus, loadPl) => {
 	if(data && data.length)
 	return html`
 		<ul>
-			${() => data.map(({id, name, songCount}) => {
-				if(!parseInt(songCount)) return;
+			${() => data.filter(({songCount}) => parseInt(songCount)).map(({id, name, songCount}, index) => {
 				return html`
 					<li>
 						<button 
 							@click="${() => loadPl(id)}"
+							data-keyboard-list-item
+							data-keyboard-selected="${() => keyboardFocus?.panel === 'playlists' && keyboardFocus?.index === index}"
 							data-id="${id}"
 							data-name="${name}"
 							data-songcount="${songCount}"
